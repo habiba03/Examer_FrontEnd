@@ -1,0 +1,135 @@
+<div class="container">
+  <nav class="navbar">
+    <img src="images/logo.svg" alt="logo" class="img-fluid">
+    <h5 class="ms-auto">{{ username }}</h5>
+  </nav>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="isLoading" class="answerQuestions row">
+    <div class="content">
+      <div class="col mb-3">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <div>
+            <p-skeleton width="10rem" height="1.5rem" styleClass="my-2"></p-skeleton>
+            <p-skeleton width="15rem" styleClass="my-2"></p-skeleton>
+          </div>
+          <div>
+            <p-skeleton width="18rem" height="1.5rem" styleClass="my-2"></p-skeleton>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end align-items-center w-100">
+          <p-skeleton width="10rem" height="1rem" styleClass="my-2"></p-skeleton>
+        </div>
+        <p-skeleton width="100%" height="8rem" styleClass="my-2"></p-skeleton>
+        <p-skeleton width="15rem" height="2rem" styleClass="my-2"></p-skeleton>
+        <p-skeleton width="10rem" styleClass="my-2"></p-skeleton>
+        <p-skeleton width="10rem" styleClass="my-2"></p-skeleton>
+        <p-skeleton width="10rem" styleClass="my-2"></p-skeleton>
+        <p-skeleton width="10rem" styleClass="my-2"></p-skeleton>
+        <div class="d-flex justify-content-end align-items-center w-100">
+          <p-skeleton width="7rem" height="2.5rem" styleClass="m-2"></p-skeleton>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Content -->
+  <div *ngIf="!isLoading" class="answerQuestions">
+    <div class="content">
+      <div class="header d-flex justify-content-between align-items-center">
+        <div>
+          <h2>{{ examTitle | titlecase }} Quiz</h2>
+          <p>Answer the question below</p>
+        </div>
+        <h2>
+          Timer:
+          <span>{{ hours < 10 ? '0' + hours : hours }} :
+          {{ remMinutes < 10 ? '0' + remMinutes : remMinutes }} :
+          {{ remSeconds < 10 ? '0' + remSeconds : remSeconds }}</span>
+        </h2>
+      </div>
+
+      <div class="question">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <span class="badge"
+                  [ngClass]="{
+                    'bg-primary': examQuestion.questionType === 'MCQ',
+                    'bg-info': examQuestion.questionType === 'TF',
+                    'bg-secondary': examQuestion.questionType === 'WRITTEN'
+                  }">
+              <ng-container *ngIf="examQuestion.questionType === 'MCQ'">
+                Multiple Choice
+                <small *ngIf="allowsMultipleAnswers(examQuestion)">(Select all that apply)</small>
+              </ng-container>
+              <ng-container *ngIf="examQuestion.questionType === 'TF'">True/False</ng-container>
+              <ng-container *ngIf="examQuestion.questionType === 'WRITTEN'">Written Answer</ng-container>
+            </span>
+          </div>
+          <p class="mb-0">Question <span>{{ currentQindex + 1 }}</span> of <span>{{ examLength }}</span></p>
+        </div>
+        <p class="my-4">{{ examQuestion.questionContent }}</p>
+      </div>
+
+      <div class="answers">
+        <form [formGroup]="optionsForm">
+
+          <!-- Multiple Choice or True/False -->
+          <ng-container *ngIf="examQuestion.questionType === 'MCQ' || examQuestion.questionType === 'TF'">
+            <h5 class="mb-3">
+              {{ allowsMultipleAnswers(examQuestion) ? 'Select all correct answers' : 'Choose one answer' }}
+            </h5>
+
+            <!-- Multiple selection -->
+            <ng-container *ngIf="allowsMultipleAnswers(examQuestion)">
+              <div *ngFor="let option of examQuestion.options; let i = index" class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" [id]="'option' + i"
+                       [checked]="selectedOptions.at(i).value" (change)="onCheckboxChange(i)">
+                <label class="form-check-label" [for]="'option' + i">{{ option }}</label>
+              </div>
+            </ng-container>
+
+            <!-- Single selection -->
+            <ng-container *ngIf="!allowsMultipleAnswers(examQuestion)">
+              <div *ngFor="let option of examQuestion.options; let i = index" class="form-check mb-2">
+                <input type="radio" class="form-check-input" formControlName="answer"
+                       [value]="option" [id]="'option' + i">
+                <label class="form-check-label" [for]="'option' + i">{{ option }}</label>
+              </div>
+            </ng-container>
+
+            <div class="text-danger mt-2" *ngIf="!isFormValid() && optionsForm.touched">
+              <small>Please select at least one answer</small>
+            </div>
+          </ng-container>
+
+          <!-- Written Answer -->
+          <ng-container *ngIf="examQuestion.questionType === 'WRITTEN'">
+            <h5 class="mb-3">Write your answer below</h5>
+            <textarea class="form-control" formControlName="writtenAnswer" rows="8"
+                      placeholder="Type your answer here... (minimum 10 characters)"
+                      [class.is-invalid]="optionsForm.get('writtenAnswer')?.invalid && optionsForm.get('writtenAnswer')?.touched">
+            </textarea>
+            <div class="invalid-feedback d-block" *ngIf="optionsForm.get('writtenAnswer')?.errors && optionsForm.get('writtenAnswer')?.touched">
+              <div *ngIf="optionsForm.get('writtenAnswer')?.getError('required')">Please provide an answer</div>
+              <div *ngIf="optionsForm.get('writtenAnswer')?.getError('minlength')">Answer must be at least 10 characters long</div>
+            </div>
+          </ng-container>
+
+          <!-- Navigation Buttons -->
+          <div class="mt-4 d-flex justify-content-end gap-2">
+            <button *ngIf="!isEnded" type="button" [disabled]="!isFormValid()" class="btn bg-main text-white"
+                    (click)="handleNextQuestion()">
+              Next <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+            <button *ngIf="isEnded" type="button" [disabled]="!isFormValid()" class="btn btn-success text-white"
+                    (click)="handleSubmit()">
+              <i class="fas fa-check me-2"></i> Submit Exam
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

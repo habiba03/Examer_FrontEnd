@@ -1,0 +1,56 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-3 d-none d-md-block">
+      <div class="side_bar bg-main">
+        <img src="images/logo2.svg" alt="logo" class="img-fluid">
+        <ul class="list-unstyled">
+          <li [ngClass]="{'active': activeSec === 'categories'}" (click)="setActivity('categories')" routerLink="/dashboard/superAdmin/categories"><span><img src="images/exams.png"> All Categories</span></li>
+          <li [ngClass]="{'active': activeSec === 'addCategory'}" (click)="setActivity('addCategory')" routerLink="/dashboard/superAdmin/addCategory"><span><img src="images/new.png"> Add New Category</span></li>
+          <li [ngClass]="{'active': activeSec === 'admins'}" (click)="setActivity('admins')" routerLink="/dashboard/superAdmin/admins"><span><img src="images/users.png"> Active Admins</span></li>
+          <li [ngClass]="{'active': activeSec === 'addAdmin'}" (click)="setActivity('addAdmin')" routerLink="/dashboard/superAdmin/addAdmin"><span><img src="images/addUser.png"> Add New Admin</span></li>
+          <li [ngClass]="{'active': activeSec === 'deletedAdmins'}" (click)="setActivity('deletedAdmins')" routerLink="/dashboard/superAdmin/deletedAdmins"><span><img src="images/delete.png"> Deleted Admins</span></li>
+          <li [ngClass]="{'active': activeSec === 'aiBot'|| activeSec === 'generatedQuestions'}" (click)="setActivity('aiBot')" routerLink="/dashboard/superAdmin/aiBot"><span><img src="images/aibot.svg"> Ai Bot</span></li>
+        </ul>
+        <ul class="list-unstyled">
+          <li [ngClass]="{'active': activeSec === 'changeInfo'|| activeSec === 'changePass'}" (click)="setActivity('changeInfo')" routerLink="/dashboard/superAdmin/profile"><span><img src="images/profile.png"> Profile</span></li>
+          <li (click)="handleLogout()"><span><img src="images/logout.png"> Logout</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-9 ms-auto col-sm-12">
+      <nav class="navbar">
+        <div class="container">
+          <button class="navbar-toggler d-md-none d-sm-block" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" routerLink="/dashboard/superAdmin/categories">Categories</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/dashboard/superAdmin/addCategory">Add Category</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/dashboard/superAdmin/admins">All Admins</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/dashboard/superAdmin/addAdmin">Add Admin</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLink="/dashboard/superAdmin/profile">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" (click)="handleLogout()">Logout</a>
+              </li>
+            </ul>
+          </div>
+          <span class="ms-auto username">{{adminName | uppercase | adminName}}</span>
+        </div>
+      </nav>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="myForm">
+    <h3>Add New<br> Category</h3>
+    <form [formGroup]="addCategoryForm">
+      <input type="text" class="form-control" formControlName="category" placeholder="Category Name">
+      @if(addCategoryForm.get('category')?.errors && addCategoryForm.get('category')?.touched){
+        <ul class="list-unstyled">
+          @if(addCategoryForm.get('category')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your category</li>
+          }
+        </ul>
+      }
+<!--      <input type="text" class="form-control" formControlName="NOQ" placeholder="Number Of Questions">-->
+<!--      @if(addCategoryForm.get('NOQ')?.errors && addCategoryForm.get('NOQ')?.touched){-->
+<!--        <ul class="list-unstyled">-->
+<!--          @if(addCategoryForm.get('NOQ')?.getError('required')){-->
+<!--            <li class="text-danger text-start">please, Enter your number of questions</li>-->
+<!--          }-->
+<!--          @if(addCategoryForm.get('NOQ')?.getError('pattern')){-->
+<!--            <li class="text-danger text-start">please, enter numbers only and min-number is 1</li>-->
+<!--          }-->
+<!--        </ul>-->
+<!--      }-->
+      <button class="btn bg-main text-white" [disabled]="addCategoryForm.invalid" (click)="handleGenerate(addCategoryForm)">
+        @if(isLoading){
+          <i class="fa fa-spinner fa-spin"></i>
+        }
+        Generate
+      </button>
+    </form>
+  </div>
+</div>

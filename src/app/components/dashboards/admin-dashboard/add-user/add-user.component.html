@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="form_container">
+    <h2>Add New <br>User</h2>
+    <form [formGroup]="addUserForm">
+      <input type="text" class="form-control" placeholder="Name" formControlName="userName">
+      @if(addUserForm.get('userName')?.errors && addUserForm.get('userName')?.touched){
+        <ul class="list-unstyled">
+          @if(addUserForm.get('userName')?.getError('required')){
+            <li class="text-danger text-start">please, Enter User Name</li>
+          }
+          @if(addUserForm.get('userName')?.getError('pattern')){
+            <li class="text-danger text-start">Name can only contain letters and "_", and must be 1-20 characters long</li>
+          }
+        </ul>
+      }
+      <input type="email" class="form-control" placeholder="Email" formControlName="email">
+      @if(addUserForm.get('email')?.errors && addUserForm.get('email')?.touched){
+        <ul class="list-unstyled">
+          @if(addUserForm.get('email')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your email</li>
+          }
+          @if(addUserForm.get('email')?.getError('email')){
+            <li class="text-danger text-start">please, enter a valid email</li>
+          }
+        </ul>
+      }
+      <input type="text" class="form-control" placeholder="Phone" formControlName="phone">
+      @if(addUserForm.get('phone')?.errors && addUserForm.get('phone')?.touched){
+        <ul class="list-unstyled">
+          @if(addUserForm.get('phone')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your phone number</li>
+          }
+          @if(addUserForm.get('phone')?.getError('pattern')){
+            <li class="text-danger text-start">please, enter a valid egyption phone number</li>
+          }
+        </ul>
+      }
+      <button type="submit" class="btn bg-main text-white" [disabled]="addUserForm.invalid || isLoading" (click)="handleAddUser(addUserForm)">
+        @if(isLoading){
+          <i class="fa fa-spinner fa-spn"></i>
+        }
+        Submit
+      </button>
+    </form>
+    <p-toast position="bottom-center" key="bc" />
+  </div>
+</div>

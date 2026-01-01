@@ -1,0 +1,475 @@
+<div class="container mt-4">
+  <h3 class="my-4">{{category|titlecase}} questions</h3>
+  <div class="myTable">
+    @if(isLoading){
+      <div class="loader">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addQuestionModal">
+      <i class="fas fa-plus"></i> Add New Question
+    </button>
+
+    <!-- Add Question Modal -->
+    <div class="modal fade" id="addQuestionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h4 class="modal-title" id="addQuestionModalLabel">Add New Question</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4">
+            <form [formGroup]="addQuestionsForm">
+              <!-- Question Type Tabs -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold mb-3">Question Type</label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" id="addMcq" formControlName="questionType" value="MCQ">
+                  <label class="btn btn-outline-primary" for="addMcq">Multiple Choice</label>
+                  
+                  <input type="radio" class="btn-check" id="addTf" formControlName="questionType" value="TF">
+                  <label class="btn btn-outline-primary" for="addTf">True/False</label>
+                  
+                  <input type="radio" class="btn-check" id="addWritten" formControlName="questionType" value="WRITTEN">
+                  <label class="btn btn-outline-primary" for="addWritten">Written Answer</label>
+                </div>
+              </div>
+
+              <!-- Multiple Correct Answers Checkbox (MCQ only) -->
+              @if(addQuestionsForm.get('questionType')?.value === 'MCQ'){
+                <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="addMultipleCorrect" [checked]="allowMultipleCorrectAdd" (change)="toggleMultipleCorrectAdd($event)">
+                    <label class="form-check-label" for="addMultipleCorrect">
+                      <strong>Allow Multiple Correct Answers</strong>
+                      <div class="small text-muted mt-1">
+                        @if(!allowMultipleCorrectAdd){
+                          Students can select only one option. Select the single correct answer below.
+                        }
+                        @else{
+                          Students can select multiple options. Select all correct answers below.
+                        }
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              }
+
+              <!-- Difficulty -->
+              <div class="mb-4">
+                <label for="addDifficulty" class="form-label fw-semibold">Difficulty Level</label>
+                <select id="addDifficulty" class="form-select" formControlName="difficulty">
+                  <option selected disabled [value]="null">Select Difficulty</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+                @if(addQuestionsForm.get('difficulty')?.errors && addQuestionsForm.get('difficulty')?.touched){
+                  <div class="invalid-feedback d-block">This field is required!</div>
+                }
+              </div>
+
+              <!-- Question Content -->
+              <div class="mb-4">
+                <label for="addQuestionContent" class="form-label fw-semibold">Question Content</label>
+                <textarea id="addQuestionContent" rows="4" class="form-control" formControlName="questionContent" placeholder="Enter your question here..."></textarea>
+                @if(addQuestionsForm.get('questionContent')?.errors && addQuestionsForm.get('questionContent')?.touched){
+                  <div class="invalid-feedback d-block">This field is required!</div>
+                }
+              </div>
+
+              <!-- Answer Options -->
+              @if(addQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Answer Options</label>
+                  
+                  @for(option of addOptions.controls; track $index){
+                    <div class="mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text bg-light" style="width: 45px;">
+                          <input 
+                            [type]="allowMultipleCorrectAdd && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio'"
+                            [name]="allowMultipleCorrectAdd ? 'addCorrect_' + $index : 'addCorrectAnswer'"
+                            [checked]="isCorrectAnswer(addQuestionsForm, $index)"
+                            (change)="toggleCorrectAnswer(addQuestionsForm, $index, $event, allowMultipleCorrectAdd)"
+                            class="form-check-input mt-0">
+                        </span>
+                        <input 
+                          type="text" 
+                          class="form-control form-control-lg" 
+                          [formControl]="$any(option)"
+                          [placeholder]="'Option ' + ($index + 1)"
+                          [readonly]="addQuestionsForm.get('questionType')?.value === 'TF'">
+                        @if(addQuestionsForm.get('questionType')?.value === 'MCQ' && addOptions.length > 2){
+                          <button type="button" class="btn btn-outline-danger" (click)="removeOption(addQuestionsForm, $index)">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        }
+                      </div>
+                      @if(option.errors && option.touched){
+                        <div class="text-danger small mt-1">This option is required!</div>
+                      }
+                    </div>
+                  }
+
+                  @if(addQuestionsForm.get('questionType')?.value === 'MCQ'){
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="addOption(addQuestionsForm)">
+                      <i class="fas fa-plus"></i> Add Option
+                    </button>
+                  }
+
+                  <div class="form-text mt-2">
+                    Select the correct answer by clicking the {{ allowMultipleCorrectAdd && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio button' }}
+                  </div>
+                </div>
+              }
+
+              <!-- Written Answer Note -->
+              @if(addQuestionsForm.get('questionType')?.value === 'WRITTEN'){
+                <div class="alert alert-info" role="alert">
+                  <strong>Note:</strong> This is an open-ended question. Students will provide written answers that need manual grading.
+                </div>
+              }
+
+              <!-- Form Errors -->
+              @if(addQuestionsForm.errors && (addQuestionsForm.touched || addQuestionsForm.dirty)){
+                <div class="alert alert-danger" role="alert">
+                  @if(addQuestionsForm.getError('noCorrectAnswer')){
+                    <div><i class="fas fa-exclamation-circle"></i> At least one correct answer must be selected!</div>
+                  }
+                  @if(addQuestionsForm.getError('duplicateOptions')){
+                    <div><i class="fas fa-exclamation-circle"></i> All options must be unique!</div>
+                  }
+                </div>
+              }
+
+              <input type="hidden" formControlName="category">
+            </form>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary px-4" [disabled]="addQuestionsForm.invalid || isLoading" (click)="handleAddQuestion(addQuestionsForm)" data-bs-dismiss="modal">
+              @if(isLoading){
+                <i class="fa fa-spinner fa-spin"></i>
+              }
+              @else{
+                <i class="fas fa-save"></i>
+              }
+              Add Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Update Question Modal -->
+    <div class="modal fade" id="updateQuestionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateQuestionModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h4 class="modal-title" id="updateQuestionModalLabel">Update Question</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4">
+            <form [formGroup]="updateQuestionsForm">
+              <!-- Question Type Tabs -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold mb-3">Question Type</label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" id="updateMcq" formControlName="questionType" value="MCQ" >
+                  <label class="btn btn-outline-primary" for="updateMcq">Multiple Choice</label>
+                  
+                  <input type="radio" class="btn-check" id="updateTf" formControlName="questionType" value="TF" >
+                  <label class="btn btn-outline-primary" for="updateTf">True/False</label>
+                  
+                  <input type="radio" class="btn-check" id="updateWritten" formControlName="questionType" value="WRITTEN" >
+                  <label class="btn btn-outline-primary" for="updateWritten">Written Answer</label>
+                </div>
+              </div>
+
+              <!-- Multiple Correct Answers Checkbox (MCQ only) -->
+              @if(updateQuestionsForm.get('questionType')?.value === 'MCQ'){
+                <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="updateMultipleCorrect" [checked]="allowMultipleCorrectUpdate" (change)="toggleMultipleCorrectUpdate($event)">
+                    <label class="form-check-label" for="updateMultipleCorrect">
+                      <strong>Allow Multiple Correct Answers</strong>
+                      <div class="small text-muted mt-1">
+                        @if(!allowMultipleCorrectUpdate){
+                          Students can select only one option. Select the single correct answer below.
+                        }
+                        @else{
+                          Students can select multiple options. Select all correct answers below.
+                        }
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              }
+
+              <!-- Difficulty -->
+              <div class="mb-4">
+                <label for="updateDifficulty" class="form-label fw-semibold">Difficulty Level</label>
+                <select id="updateDifficulty" class="form-select" formControlName="difficulty" >
+                  <option disabled [value]="null">Select Difficulty</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+              </div>
+
+              <!-- Question Content -->
+              <div class="mb-4">
+                <label for="updateQuestionContent" class="form-label fw-semibold">Question Content</label>
+                <textarea id="updateQuestionContent" rows="4" class="form-control" formControlName="questionContent" placeholder="Enter your question here..."></textarea>
+                @if(updateQuestionsForm.get('questionContent')?.errors && updateQuestionsForm.get('questionContent')?.touched){
+                  <div class="invalid-feedback d-block">This field is required!</div>
+                }
+              </div>
+
+              <!-- Answer Options -->
+              <!-- @if(updateQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Answer Options</label>
+                  
+                  @for(option of updateOptions.controls; track $index){
+                    <div class="mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text bg-light" style="width: 45px;">
+                          <input 
+                            [type]="allowMultipleCorrectUpdate && updateQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio'"
+                            [name]="allowMultipleCorrectUpdate ? 'updateCorrect_' + $index : 'updateCorrectAnswer'"
+                            [checked]="isCorrectAnswer(updateQuestionsForm, $index)"
+                            (change)="toggleCorrectAnswer(updateQuestionsForm, $index, $event, allowMultipleCorrectUpdate)"
+                            class="form-check-input mt-0">
+                        </span>
+                        <input 
+                          type="text" 
+                          class="form-control form-control-lg" 
+                          [formControl]="$any(option)"
+                          [placeholder]="'Option ' + ($index + 1)"
+                          [readonly]="updateQuestionsForm.get('questionType')?.value === 'TF'">
+                        @if(updateQuestionsForm.get('questionType')?.value === 'MCQ' && updateOptions.length > 2){
+                          <button type="button" class="btn btn-outline-danger" (click)="removeOption(updateQuestionsForm, $index)">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        }
+                      </div>
+                      @if(option.errors && option.touched){
+                        <div class="text-danger small mt-1">This option is required!</div>
+                      }
+                    </div>
+                  }
+           
+
+                  @if(updateQuestionsForm.get('questionType')?.value === 'MCQ'){
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="addOption(updateQuestionsForm)">
+                      <i class="fas fa-plus"></i> Add Option
+                    </button>
+                  }
+
+                  <div class="form-text mt-2">
+                    Select the correct answer by clicking the {{ allowMultipleCorrectUpdate && updateQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio button' }}
+                  </div>
+                </div>
+              } -->
+
+
+
+
+              <!-- Answer Options -->
+              @if(addQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Answer Options</label>
+                
+                @for(option of updateOptions.controls; track $index){
+                  <div class="mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text bg-light" style="width: 45px;">
+                        <input 
+                          [type]="allowMultipleCorrectUpdate && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio'"
+                          [name]="allowMultipleCorrectUpdate ? 'correct_' + $index : 'correctAnswer'"
+                          [checked]="isCorrectAnswer(updateQuestionsForm, $index)"
+                          (change)="toggleCorrectAnswer(updateQuestionsForm, $index, $event, allowMultipleCorrectUpdate)"
+                          class="form-check-input mt-0">
+                      </span>
+                      <input 
+                        type="text" 
+                        class="form-control form-control-lg" 
+                        [formControl]="$any(option)"
+                        [placeholder]="'Option ' + ($index + 1)"
+                        [readonly]="addQuestionsForm.get('questionType')?.value === 'TF'">
+                      @if(addQuestionsForm.get('questionType')?.value === 'MCQ' && updateOptions.length > 2){
+                        <button 
+                          type="button" 
+                          class="btn btn-outline-danger" 
+                          (click)="removeOption(updateQuestionsForm, $index)">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      }
+                    </div>
+                    @if(option.errors && option.touched){
+                      <div class="text-danger small mt-1">
+                        This option is required!
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if(addQuestionsForm.get('questionType')?.value === 'MCQ'){
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-primary btn-sm" 
+                    (click)="addOption(updateQuestionsForm)">
+                    <i class="fas fa-plus"></i> Add Option
+                  </button>
+                }
+
+                <div class="form-text mt-2">
+                  Select the correct answer by clicking the {{ allowMultipleCorrectUpdate && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio button' }}
+                </div>
+              </div>
+            }
+
+
+
+
+
+              <!-- Written Answer Note -->
+              @if(updateQuestionsForm.get('questionType')?.value === 'WRITTEN'){
+                <div class="alert alert-info" role="alert">
+                  <strong>Note:</strong> This is an open-ended question. Students will provide written answers that need manual grading.
+                </div>
+              }
+
+              <!-- Form Errors -->
+              @if(updateQuestionsForm.errors && (updateQuestionsForm.touched || updateQuestionsForm.dirty)){
+                <div class="alert alert-danger" role="alert">
+                  @if(updateQuestionsForm.getError('noCorrectAnswer')){
+                    <div><i class="fas fa-exclamation-circle"></i> At least one correct answer must be selected!</div>
+                  }
+                  @if(updateQuestionsForm.getError('duplicateOptions')){
+                    <div><i class="fas fa-exclamation-circle"></i> All options must be unique!</div>
+                  }
+                </div>
+              }
+
+              <input type="hidden" formControlName="category">
+            </form>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary px-4" [disabled]="updateQuestionsForm.invalid || isLoading" (click)="handleUpdateQuestion(updateQuestionsForm)" data-bs-dismiss="modal">
+              @if(isLoading){
+                <i class="fa fa-spinner fa-spin"></i>
+              }
+              @else{
+                <i class="fas fa-save"></i>
+              }
+              Update Question
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-scroll">
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Content</th>
+          <th scope="col">Type</th>
+          <th scope="col">Options</th>
+          <th scope="col">Correct Answer(s)</th>
+          <th scope="col">
+            Difficulty
+            <div class="dropdown">
+              <i class="pi pi-filter filter-icon" data-bs-toggle="dropdown"></i>
+              <ul class="dropdown-menu">
+                <li (click)="filterByDifficulty('all')" class="dropdown-item">All</li>
+                <li (click)="filterByDifficulty('Easy')" class="dropdown-item">Easy</li>
+                <li (click)="filterByDifficulty('Medium')" class="dropdown-item">Medium</li>
+                <li (click)="filterByDifficulty('Hard')" class="dropdown-item">Hard</li>
+              </ul>
+            </div>
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+          @if(questions.length === 0){
+            <tr>
+              <td colspan="8">
+                <div class="nothing_found">
+                  <h4 class="text-center text-danger my-5">No questions founded!</h4>
+                </div>
+              </td>
+            </tr>
+          }
+
+        @for(question of questions; track question.questionId; let i=$index){
+          <tr>
+            <th scope="row">{{ i + 1 }}</th>
+            <td [pTooltip]="question.questionContent" tooltipPosition="right" class="question_content">
+              {{question.questionContent}}
+            </td>
+            <td>
+              @if(question.questionType === 'MCQ'){
+                <span class="badge bg-primary">MCQ</span>
+              }
+              @if(question.questionType === 'TF'){
+                <span class="badge bg-info">T/F</span>
+              }
+              @if(question.questionType === 'WRITTEN'){
+                <span class="badge bg-secondary">Written</span>
+              }
+            </td>
+            <td>
+              @if(question.questionType !== 'WRITTEN'){
+                <ul class="list-unstyled mb-0">
+                  @for(option of question.options; track $index){
+                    <li>{{$index + 1}}. {{option}}</li>
+                  }
+                </ul>
+              }
+              @else{
+                <span class="text-muted">N/A</span>
+              }
+            </td>
+            <td>
+              @if(question.questionType !== 'WRITTEN'){
+                <span class="badge bg-success">{{getCorrectAnswersDisplay(question)}}</span>
+              }
+              @else{
+                <span class="text-muted">N/A</span>
+              }
+            </td>
+            <td>{{question.difficulty}}</td>
+            <td data-bs-toggle="modal" data-bs-target="#updateQuestionModal" (click)="handleGetQuestion(question.questionId)" class="edit">
+              <i class="fas fa-edit bg-main text-white btn py-2"></i>
+            </td>
+            <td (click)="handleDleteQuestion($event,question.questionId)" class="edit">
+              <i class="fas fa-trash btn btn-danger py-2"></i>
+            </td>
+          </tr>
+        }
+        <tr>
+          <td colspan="8">
+            <p-paginator
+              (onPageChange)="onPageChange($event)"
+              [first]="first"
+              [rows]="1"
+              [totalRecords]="totalPages"/>
+          </td>
+        </tr>
+        <p-toast position="bottom-center" key="bc" />
+        <p-confirmDialog />
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

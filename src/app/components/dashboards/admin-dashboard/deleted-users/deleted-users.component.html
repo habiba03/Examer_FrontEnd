@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="myTable">
+    @if(isLoading){
+      <div class="loader">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone</th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if(users.length === 0){
+          <tr >
+            <td colspan="5">
+              <div class="nothing_found">
+                <h4 class="text-center text-danger my-5">No deleted users founded!</h4>
+              </div>
+            </td>
+          </tr>
+        }
+        @for (user of users;track user.userId; let i=$index){
+          <tr>
+            <th scope="row">{{i+1}}</th>
+            <td>{{ user.userName }}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.phone}}</td>
+            <td [pTooltip]="'Restore User Data'" tooltipPosition="bottom" (click)="handleRestore($event,user.userId)"><i class="fas fa-trash-restore-alt text-white btn btn-primary py-2"></i></td>
+            <td [pTooltip]="'Permanent Delete'" tooltipPosition="bottom" (click)="handleDelete($event,user.userId)"><i class="fas fa-trash btn btn-danger py-2"></i></td>
+          </tr>
+        }
+      <tr>
+        <td colspan="6">
+          <p-paginator
+            (onPageChange)="onPageChange($event)"
+            [first]="first"
+            [rows]="1"
+            [totalRecords]="totalPages"/>
+        </td>
+      </tr>
+      <p-toast position="bottom-center" key="bc" />
+      <p-confirmDialog />
+      </tbody>
+
+    </table>
+  </div>
+</div>

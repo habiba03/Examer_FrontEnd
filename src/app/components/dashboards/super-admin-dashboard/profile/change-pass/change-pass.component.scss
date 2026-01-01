@@ -1,0 +1,16 @@
+h6{
+  border-bottom: 1px solid #bfbfbf;
+  padding-bottom: 15px;
+}
+.showPassword {
+  position: relative;
+  margin: 15px 0;
+
+  i {
+    position: absolute;
+    top: calc(50% - 8px);
+    right: 20px;
+    color: #4A3AFF;
+    cursor: pointer;
+  }
+}

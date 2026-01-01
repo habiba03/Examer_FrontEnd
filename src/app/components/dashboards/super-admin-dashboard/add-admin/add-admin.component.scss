@@ -1,0 +1,30 @@
+.container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: calc(100vh - 66px);
+
+  h2{
+    margin-bottom: 40px;
+  }
+  .form_container{
+    width: 40%;
+    input{
+      margin: 15px 0;
+      padding: 12px;
+    }
+    button{
+      width: 100%;
+      margin: 20px 0;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .container{
+    .form_container{
+      width: 100%;
+    }
+  }
+}

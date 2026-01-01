@@ -1,0 +1,45 @@
+<div class="contact">
+  <div class="container text-center">
+    <h2>Contact Us</h2>
+    <p>Some contact information on how to reach out</p>
+    <form [formGroup]="contactForm">
+      <div class="form-group">
+        <input type="email" placeholder="Email" formControlName="userEmail" class="form-control" >
+        @if(contactForm.get('userEmail')?.errors && contactForm.get('userEmail')?.touched){
+          <ul class="list-unstyled">
+            @if(contactForm.get('userEmail')?.getError('required')){
+              <li class="text-danger text-start">please, Enter your Email</li>
+            }
+            @if(contactForm.get('userEmail')?.getError('email')){
+              <li class="text-danger text-start">please, Enter a valid Email</li>
+            }
+          </ul>
+        }
+        <input type="text" placeholder="Subject" formControlName="subject" class="form-control" >
+        @if(contactForm.get('subject')?.errors && contactForm.get('subject')?.touched){
+          <ul class="list-unstyled">
+            @if(contactForm.get('subject')?.getError('required')){
+              <li class="text-danger text-start">please, Enter your subject</li>
+            }
+          </ul>
+        }
+        <textarea rows="6" placeholder="Message" formControlName="userMessage" class="form-control" ></textarea>
+        @if(contactForm.get('userMessage')?.errors && contactForm.get('userMessage')?.touched){
+          <ul class="list-unstyled">
+            @if(contactForm.get('userMessage')?.getError('required')){
+              <li class="text-danger text-start">please, Enter your message</li>
+            }
+          </ul>
+        }
+        <button type="submit" [disabled]="contactForm.invalid || isLoading" (click)="handleContact(contactForm)" class="btn bg-main text-white">
+          @if(isLoading){
+            <i class="fa fa-spinner fa-spin"></i>
+          }
+          Send
+        </button>
+        <p-toast position="bottom-center" key="bc"/>
+      </div>
+    </form>
+  </div>
+
+</div>

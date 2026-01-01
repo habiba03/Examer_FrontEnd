@@ -1,0 +1,73 @@
+<div class="container">
+  <h3>Exams</h3>
+  <div class="row">
+    @if(isLoading){
+      <div class="row row-cols-2 py-5 my-4">
+        <div *ngFor="let item of [0,1,2,3]" class="col mb-3">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <p-skeleton width="20rem" height="120px" styleClass="mr-2" />
+            <div>
+              <p-skeleton width="10rem" height="2rem" styleClass="my-2" />
+              <p-skeleton width="10rem" height="2rem" styleClass="my-2" />
+            </div>
+          </div>
+          <p-skeleton width="30%" styleClass="my-2" />
+          <p-skeleton width="60%" styleClass="my-2" />
+          <div class="d-flex justify-content-end align-items-center w-100">
+            <p-skeleton width="4rem" height="2rem" styleClass="m-2 " />
+            <p-skeleton width="4rem" height="2rem" styleClass="m-2 " />
+          </div>
+        </div>
+      </div>
+    }
+    @if(!isLoading){
+      @if(exams.length === 0){
+        <div class="nothing_found">
+          <h2 class="text-center text-danger my-5">No exams founded!</h2>
+        </div>
+      }
+      @for(exam of exams; track exam.examId){
+        <div class="col-md-6 col-sm-12">
+          <div class="exam_card">
+            <div class="row align-items-center">
+              <div class="col-6">
+                <div class="leftSide">
+                  <img src="images/exam.png" alt="exam_logo" class="img-fluid">
+                  <h4>{{exam.examTitle}}</h4>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="rightSide">
+                  <div>
+                    <img src="images/mark.png" alt="mark" class="img-fluid">
+                    <span>Mark: {{exam.easy+exam.medium+exam.hard}}</span>
+                  </div>
+                  <div>
+                    <img src="images/duration.png" alt="duration" class="img-fluid">
+                    <span>{{exam.examDuration}} Min</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p>{{exam.examDescription}}</p>
+            <p class="text-end">{{exam.createdDate|date}}</p>
+            <div class="btns float-end">
+              <button class="btn bg-main text-white" [routerLink]="['/dashboard/admin/addUserToExam',exam.examTitle ,exam.examId]">Assign</button>
+              <button class="btn btn-danger text-white" (click)="handleDelete($event,exam.examId)">Delete</button>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      }
+    }
+
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="1"
+      [totalRecords]="totalPages"/>
+
+    </div>
+  <p-toast position="bottom-center" key="bc" />
+  <p-confirmDialog />
+</div>

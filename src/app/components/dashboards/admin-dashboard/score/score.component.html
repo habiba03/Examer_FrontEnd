@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="mySelect">
+    <p-dropdown
+      [options]="examsName"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
+      (onChange)="handleDropDown($event)"
+      placeholder="Select an exam">
+      <ng-template pTemplate="selectedItem" let-selectedOption>
+        <div class="flex align-items-center gap-2">
+          <div>{{ selectedOption.name }}</div>
+        </div>
+      </ng-template>
+    </p-dropdown>
+  </div>
+  <div class="myTable">
+    @if(isLoading){
+      <div class="loader">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Exam</th>
+        <th scope="col">Score</th>
+        <th scope="col">Status</th>
+        <th scope="col">Reset Exam</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if(results.value.length === 0){
+          <tr>
+            <td colspan="6">
+              <div class="nothing_found">
+                <h4 class="text-center text-danger my-5">No users founded!</h4>
+              </div>
+            </td>
+          </tr>
+        }
+      @for(res of results.value|alphabeticalOrder;track res.userName; let i=$index){
+        <tr>
+          <th scope="row">{{i+1}}</th>
+          <td>{{res.userName}}</td>
+          <td>{{res.examName}}</td>
+          <td>{{res.score}} out of {{total_mark}}</td>
+          <td class="text-white" [ngClass]="{'bg-success': res.score >= passMark, 'bg-danger': res.score < passMark}">{{ res.score >= passMark ? 'Success' : 'Fail' }}</td>
+          <td><button class="btn btn-outline-info" (click)="handleReset(res)">Reset</button></td>
+        </tr>
+      }
+      <tr>
+        <td colspan="5">
+          <p-paginator
+            (onPageChange)="onPageChange($event)"
+            [first]="first"
+            [rows]="1"
+            [totalRecords]="totalPages"/>
+        </td>
+      </tr>
+      </tbody>
+      <p-toast position="bottom-center" key="bc"/>
+    </table>
+  </div>
+</div>

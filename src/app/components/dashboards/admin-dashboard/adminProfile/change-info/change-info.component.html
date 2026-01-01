@@ -1,0 +1,46 @@
+<h6 class="text-center my-4">Change Information</h6>
+<form [formGroup]="changeInfoForm">
+  <label for="username" class="form-label">Username</label>
+  <input type="text" class="form-control my-3" id="username" formControlName="adminUserName" placeholder="User Name">
+  @if(changeInfoForm.get('adminUserName')?.errors && changeInfoForm.get('adminUserName')?.touched){
+    <ul class="list-unstyled">
+      @if(changeInfoForm.get('adminUserName')?.getError('required')){
+        <li class="text-danger text-start">please, Enter your username</li>
+      }
+      @if(changeInfoForm.get('adminUserName')?.getError('pattern')){
+        <li class="text-danger text-start">Username can only contain letters, numbers and "_", and must be 1-20 characters long</li>
+      }
+    </ul>
+  }
+  <label for="email" class="form-label">Email</label>
+  <input type="email" class="form-control my-3" id="email" formControlName="email" placeholder="Email">
+  @if(changeInfoForm.get('email')?.errors && changeInfoForm.get('email')?.touched){
+    <ul class="list-unstyled">
+      @if(changeInfoForm.get('email')?.getError('required')){
+        <li class="text-danger text-start">please, Enter your email</li>
+      }
+      @if(changeInfoForm.get('email')?.getError('email')){
+        <li class="text-danger text-start">please, enter a valid email</li>
+      }
+    </ul>
+  }
+  <label for="phone" class="form-label">Phone</label>
+  <input type="text" class="form-control my-3" id="phone" formControlName="phone" placeholder="Phone">
+  @if(changeInfoForm.get('phone')?.errors && changeInfoForm.get('phone')?.touched){
+    <ul class="list-unstyled">
+      @if(changeInfoForm.get('phone')?.getError('required')){
+        <li class="text-danger text-start">please, Enter your phone number</li>
+      }
+      @if(changeInfoForm.get('phone')?.getError('pattern')){
+        <li class="text-danger text-start">please, enter a valid egyption phone number</li>
+      }
+    </ul>
+  }
+  <button class="btn bg-main text-white p-2 my-4 w-100" [disabled]="changeInfoForm.invalid || isLoading" (click)="handleChangeInfo(changeInfoForm)">
+    @if(isLoading){
+      <i class="fa fa-spinner fa-spin"></i>
+    }
+    Update
+  </button>
+  <p-toast position="bottom-center" key="bc"/>
+  </form>

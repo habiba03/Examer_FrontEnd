@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="form_container">
+    <h2>Add New <br>Admin</h2>
+    <form [formGroup]="addAdminForm">
+      <input type="text" class="form-control" placeholder="Username" formControlName="adminUserName">
+      @if(addAdminForm.get('adminUserName')?.errors && addAdminForm.get('adminUserName')?.touched){
+        <ul class="list-unstyled">
+          @if(addAdminForm.get('adminUserName')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your username</li>
+          }
+          @if(addAdminForm.get('adminUserName')?.getError('pattern')){
+            <li class="text-danger text-start">Username can only contain letters, numbers and "_", and must be 1-20 characters long</li>
+          }
+        </ul>
+      }
+      <input type="email" class="form-control" placeholder="Email" formControlName="email">
+      @if(addAdminForm.get('email')?.errors && addAdminForm.get('email')?.touched){
+        <ul class="list-unstyled">
+          @if(addAdminForm.get('email')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your email</li>
+          }
+          @if(addAdminForm.get('email')?.getError('email')){
+            <li class="text-danger text-start">please, enter a valid email</li>
+          }
+        </ul>
+      }
+      <input type="text" class="form-control" placeholder="Phone" formControlName="phone">
+      @if(addAdminForm.get('phone')?.errors && addAdminForm.get('phone')?.touched){
+        <ul class="list-unstyled">
+          @if(addAdminForm.get('phone')?.getError('required')){
+            <li class="text-danger text-start">please, Enter your phone number</li>
+          }
+          @if(addAdminForm.get('phone')?.getError('pattern')){
+            <li class="text-danger text-start">please, enter a valid egyption phone number</li>
+          }
+        </ul>
+      }
+      <button type="submit" [disabled]="addAdminForm.invalid || isLoading" (click)="handleAddAdmin(addAdminForm)" class="btn bg-main text-white">
+        @if(isLoading){
+          <i class="fa fa-spinner fa-spin"></i>
+        }
+        Submit
+      </button>
+      <p-toast position="bottom-center" key="bc" />
+    </form>
+  </div>
+</div>

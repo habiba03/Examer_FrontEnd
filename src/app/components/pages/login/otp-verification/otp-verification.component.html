@@ -1,0 +1,29 @@
+<div class="contact">
+  <div class="container text-center">
+    <h2>You ‘ve Got Email</h2>
+    <p>We have sent the OTP verification code to your email address check your email and enter the code below.</p>
+    <button [disabled]="isValid||isReLoading" class="btn bg-main text-white my-4" (click)="handleResendOtpCode()">
+      @if(isReLoading){
+        <i class="fa fa-spinner fa-spin"></i>
+      }
+      Re-send Code
+      @if(isValid){
+        ({{secondsCount}}s)
+      }
+    </button>
+    <p-inputOtp [(ngModel)]="value" />
+    <form>
+      <div class="form-group">
+        <button type="submit" [disabled]="value.length !=4 || isLoading" class="btn bg-main text-white" (click)="handleCheckOtp()">
+          @if(isLoading){
+            <i class="fa fa-spinner fa-spin"></i>
+          }
+          Cofirm
+        </button>
+        <a routerLink="/pages/login" class="color-main">Back to login</a>
+      </div>
+    </form>
+    <p-toast position="bottom-center" key="bc"/>
+  </div>
+
+</div>

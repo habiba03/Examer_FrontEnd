@@ -1,0 +1,28 @@
+.container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 66px);
+
+  .myForm{
+    width: 40%;
+    text-align: center;
+    input{
+      margin: 15px 0;
+      padding: 12px;
+    }
+    button{
+      width: 100%;
+      margin: 20px 0;
+    }
+  }
+
+}
+
+@media (max-width: 767px) {
+  .container{
+    .myForm{
+      width: 100%;
+    }
+  }
+}

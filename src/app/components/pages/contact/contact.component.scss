@@ -1,0 +1,48 @@
+.contact{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 82px);
+  background: url("../../../../../public/images/contact.svg") no-repeat center center;
+
+  .container{
+    width: 20%;
+
+    h2{
+      font-weight: bold;
+    }
+
+    form{
+      input{
+        margin: 15px 0;
+      }
+      button{
+        width: 100%;
+        margin: 20px 0;
+        transition: all 0.3s ease-in-out;
+
+        &:hover{
+          background-color: #fff !important;
+          color: #4A3AFF !important;
+          border: 1px solid #4A3AFF !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .contact{
+    .container{
+      width: 40%;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .contact{
+    .container{
+      width: 90%;
+    }
+  }
+}

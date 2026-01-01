@@ -1,0 +1,10 @@
+<h3>Hello, {{ adminName }}</h3>
+<div class="container">
+  <div class="myForms">
+    <div class="btns">
+      <button class="btn" [ngClass]="{'active': activeBtn === 'changeInfo'}" (click)="setActivity('changeInfo')" routerLink="changeInfo">Change Information</button>
+      <button class="btn" [ngClass]="{'active': activeBtn === 'changePass'}" (click)="setActivity('changePass')" routerLink="changePass">Change Password</button>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

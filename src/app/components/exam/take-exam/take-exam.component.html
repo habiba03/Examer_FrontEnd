@@ -1,0 +1,27 @@
+<div class="container">
+  <nav>
+    <img src="images/logo.svg" alt="logo" class="img-fluid">
+  </nav>
+<div class="takeExam">
+  <div class="content">
+    <h2>Are you ready to take you exam?</h2>
+    <p>
+      <b>Note:</b> Once you click the <b>Take Exam</b> button below, you will be redirected to the exam page, and the timer will start.
+      Please ensure you are ready before clicking the button.
+    </p>
+    <p>
+      <b>Important:</b> During the exam:
+    </p>
+    <ul>
+      <li>You are <b>not allowed</b> to exit fullscreen mode.</li>
+      <li>You are <b>not allowed</b> to switch to another tab or minimize the browser window.</li>
+      <li>Copying and pasting are <b>strictly prohibited</b>.</li>
+    </ul>
+    <p>
+      Any violation of these rules may result in automatic submission of the exam.
+    </p>
+
+    <button class="btn bg-main text-white" [routerLink]="['/exam/answerQuestions',examId]">Take Exam</button>
+  </div>
+</div>
+</div>

@@ -1,0 +1,30 @@
+.container{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 66px);
+  .myForms{
+    width: 45%;
+    .btns{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      button{
+        border: 1px solid #acacac;
+      }
+      button.active{
+        border: 2px solid #4A3AFF;
+        margin: 0 10px;
+      }
+    }
+  }
+}
+
+
+@media (max-width: 767px) {
+  .container{
+    .myForms{
+      width: 100%;
+    }
+  }
+}

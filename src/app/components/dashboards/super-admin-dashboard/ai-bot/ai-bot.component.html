@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="form_container">
+    <h2>Generate Questions</h2>
+    <form [formGroup]="newQuestion">
+
+      <!--      <input type="text" class="form-control" formControlName="NumberOfQuestions" placeholder="Number Of Questions">-->
+      <!--        @if(newQuestion.get('NumberOfQuestions')?.errors && newQuestion.get('NumberOfQuestions')?.touched){-->
+      <!--          <ul class="list-unstyled text-start">-->
+      <!--            @if(newQuestion.get('NumberOfQuestions')?.getError('required')){-->
+      <!--              <li class="text-danger">This feild is required</li>-->
+      <!--            }-->
+      <!--            @if(newQuestion.get('NumberOfQuestions')?.getError('max')){-->
+      <!--              <li class="text-danger">This category have just {{num_totalQuestions}} questions</li>-->
+      <!--            }-->
+      <!--            @if(newQuestion.get('NumberOfQuestions')?.getError('min')){-->
+      <!--              <li class="text-danger">Min number of question must be 1</li>-->
+      <!--            }-->
+      <!--          </ul>-->
+      <!--        }-->
+      <input type="text" class="form-control" formControlName="questionTitle" placeholder="Enter Question Title">
+      @if(newQuestion.get('questionTitle')?.errors && newQuestion.get('questionTitle')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newQuestion.get('questionTitle')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+        </ul>
+      }
+      <input type="text" class="form-control" formControlName="questionTopic" placeholder="Enter Questions Topic">
+      @if(newQuestion.get('questionTopic')?.errors && newQuestion.get('questionTopic')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newQuestion.get('questionTopic')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+
+        </ul>
+      }
+      <div class="row">
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="easyQuestion" placeholder="Easy">
+          @if(newQuestion.get('easyQuestion')?.errors && newQuestion.get('easyQuestion')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newQuestion.get('easyQuestion')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newQuestion.get('easyQuestion')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newQuestion.get('easyQuestion')?.getError('max')){
+                <li class="text-danger">max number of question must be 10</li>
+              }
+              @if(newQuestion.get('easyQuestion')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="mediumQuestion" placeholder="Medium">
+          @if(newQuestion.get('mediumQuestion')?.errors && newQuestion.get('mediumQuestion')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newQuestion.get('mediumQuestion')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newQuestion.get('mediumQuestion')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newQuestion.get('mediumQuestion')?.getError('max')){
+                <li class="text-danger">max number of question must be 10</li>
+              }
+              @if(newQuestion.get('mediumQuestion')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="hardQuestion" placeholder="Hard">
+          @if(newQuestion.get('hardQuestion')?.errors && newQuestion.get('hardQuestion')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newQuestion.get('hardQuestion')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newQuestion.get('hardQuestion')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newQuestion.get('hardQuestion')?.getError('max')){
+                <li class="text-danger">max number of question must be 10</li>
+              }
+              @if(newQuestion.get('hardQuestion')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <input type="hidden" formControlName="adminId" class="form-control">
+      <button [disabled]="newQuestion.invalid || isLoading" type="submit" class="btn bg-main text-white" (click)="handleAiBot(newQuestion)">
+        @if(isLoading){
+          <i class="fa fa-spinner fa-spin"></i>
+        }
+        Generate
+      </button>
+      <p-toast position="bottom-center" key="bc"/>
+    </form>
+  </div>
+</div>
+

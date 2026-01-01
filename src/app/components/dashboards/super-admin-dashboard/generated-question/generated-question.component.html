@@ -1,0 +1,102 @@
+<div class="container">
+  <h3 class="my-4">{{categoryName|titlecase}} Questions</h3>
+  <div class="myTable">
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="loader">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoading">
+<!--      <table class="table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--          <th scope="col">#</th>-->
+<!--          <th scope="col">Content</th>-->
+<!--          <th scope="col">Option1</th>-->
+<!--          <th scope="col">Option2</th>-->
+<!--          <th scope="col">Option3</th>-->
+<!--          <th scope="col">Option4</th>-->
+<!--          <th scope="col">Correct Answer</th>-->
+<!--          <th scope="col">Difficulty</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        &lt;!&ndash; No Questions Found &ndash;&gt;-->
+<!--        <tr *ngIf="questions.length === 0">-->
+<!--          <td colspan="8">-->
+<!--            <div class="nothing_found">-->
+<!--              <h4 class="text-center text-danger my-5">No questions found!</h4>-->
+<!--            </div>-->
+<!--          </td>-->
+<!--        </tr>-->
+
+<!--        &lt;!&ndash; Questions &ndash;&gt;-->
+<!--        <tr *ngFor="let question of questions; let i = index">-->
+<!--          <th scope="row"><input type="checkbox"  ></th>-->
+<!--          <td-->
+<!--            pTooltip="{{ question.questionContent }}"-->
+<!--            tooltipPosition="right"-->
+<!--            class="question_content"-->
+<!--          >-->
+<!--            {{ question.questionContent }}-->
+<!--          </td>-->
+<!--          <td>{{ question.option1 }}</td>-->
+<!--          <td>{{ question.option2 }}</td>-->
+<!--          <td>{{ question.option3 }}</td>-->
+<!--          <td>{{ question.option4 }}</td>-->
+<!--          <td>{{ question.correctAnswer }}</td>-->
+<!--          <td>{{ question.difficulty| titlecase }}</td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--      </table>-->
+
+      <p-table
+        [value]="questions"
+        [(selection)]="selectedQuestions"
+        dataKey="questionContent"
+        [tableStyle]="{'min-width': '50rem'}">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+            <th scope="col">Content</th>
+            <th scope="col">Option1</th>
+            <th scope="col">Option2</th>
+            <th scope="col">Option3</th>
+            <th scope="col">Option4</th>
+            <th scope="col">Correct Answer</th>
+            <th scope="col">Difficulty</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-question>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="question"/>
+            </td>
+            <td
+              pTooltip="{{ question.questionContent }}"
+              tooltipPosition="right"
+              class="question_content"
+            >
+              {{ question.questionContent }}
+            </td>
+            <td>{{ question.option1 }}</td>
+            <td>{{ question.option2 }}</td>
+            <td>{{ question.option3 }}</td>
+            <td>{{ question.option4 }}</td>
+            <td>{{ question.correctAnswer }}</td>
+            <td>{{ question.difficulty| titlecase }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </div>
+    <button class="btn bg-main p-2 px-4 my-3 text-center text-white" (click)="handleAddQuestions()">Add Questions</button>
+  </div>
+
+  <!-- Toast and Confirmation Dialog -->
+  <p-toast position="bottom-center" key="bc"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+</div>

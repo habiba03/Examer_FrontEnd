@@ -1,0 +1,149 @@
+<div class="container">
+  <div class="form_container">
+    <h2>Add new Exam</h2>
+    <form [formGroup]="newExam">
+      <p-dropdown
+        [options]="categoriesName"
+        optionLabel="name"
+        optionValue="name"
+        [filter]="true"
+        filterBy="name"
+        formControlName="categoryName"
+        [showClear]="true"
+        (onChange)="handleDropDown($event)"
+        placeholder="Select a category">
+        <ng-template pTemplate="selectedItem" let-selectedOption>
+          <div class="flex align-items-center gap-2">
+            <div>{{ selectedOption.name }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-country pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <div>{{ country.name }}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+
+      @if(newExam.get('categoryName')?.errors && newExam.get('categoryName')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newExam.get('categoryName')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+        </ul>
+      }
+<!--      <input type="text" class="form-control" formControlName="NumberOfQuestions" placeholder="Number Of Questions">-->
+<!--        @if(newExam.get('NumberOfQuestions')?.errors && newExam.get('NumberOfQuestions')?.touched){-->
+<!--          <ul class="list-unstyled text-start">-->
+<!--            @if(newExam.get('NumberOfQuestions')?.getError('required')){-->
+<!--              <li class="text-danger">This feild is required</li>-->
+<!--            }-->
+<!--            @if(newExam.get('NumberOfQuestions')?.getError('max')){-->
+<!--              <li class="text-danger">This category have just {{num_totalQuestions}} questions</li>-->
+<!--            }-->
+<!--            @if(newExam.get('NumberOfQuestions')?.getError('min')){-->
+<!--              <li class="text-danger">Min number of question must be 1</li>-->
+<!--            }-->
+<!--          </ul>-->
+<!--        }-->
+
+      <input type="text" class="form-control" formControlName="examTitle" placeholder="Exam Title">
+      @if(newExam.get('examTitle')?.errors && newExam.get('examTitle')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newExam.get('examTitle')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+        </ul>
+      }
+
+      <input type="text" class="form-control" formControlName="examDuration" placeholder="Duration with Mins">
+      @if(newExam.get('examDuration')?.errors && newExam.get('examDuration')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newExam.get('examDuration')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+          @if(newExam.get('examDuration')?.getError('min')){
+            <li class="text-danger">Min duration must be 1 min</li>
+          }
+          @if(newExam.get('examDuration')?.getError('pattern')){
+            <li class="text-danger">Please, Enter numbers only</li>
+          }
+        </ul>
+      }
+      <div class="row">
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="easy" placeholder="Easy">
+          @if(newExam.get('easy')?.errors && newExam.get('easy')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newExam.get('easy')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newExam.get('easy')?.getError('max')){
+                <li class="text-danger">This category have just {{num_easy}} easy questions</li>
+              }
+              @if(newExam.get('easy')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newExam.get('easy')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="medium" placeholder="Medium">
+          @if(newExam.get('medium')?.errors && newExam.get('medium')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newExam.get('medium')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newExam.get('medium')?.getError('max')){
+                <li class="text-danger">This category have just {{num_medium}} medium questions</li>
+              }
+              @if(newExam.get('medium')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newExam.get('medium')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="hard" placeholder="Hard">
+          @if(newExam.get('hard')?.errors && newExam.get('hard')?.touched){
+            <ul class="list-unstyled text-start">
+              @if(newExam.get('hard')?.getError('required')){
+                <li class="text-danger">This feild is required</li>
+              }
+              @if(newExam.get('hard')?.getError('max')){
+                <li class="text-danger">This category have just {{num_hard}} hard questions</li>
+              }
+              @if(newExam.get('hard')?.getError('min')){
+                <li class="text-danger">Min number of question must be 0</li>
+              }
+              @if(newExam.get('hard')?.getError('pattern')){
+                <li class="text-danger">Please, Enter numbers only</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+      <textarea rows="6" placeholder="Description" class="form-control" formControlName="examDescription"></textarea>
+      @if(newExam.get('examDescription')?.errors && newExam.get('examDescription')?.touched){
+        <ul class="list-unstyled text-start">
+          @if(newExam.get('examDescription')?.getError('required')){
+            <li class="text-danger">This feild is required</li>
+          }
+        </ul>
+      }
+      <input type="hidden" formControlName="adminId" class="form-control">
+      <button [disabled]="newExam.invalid || isLoading" type="submit" class="btn bg-main text-white" (click)="handleAddExam(newExam)">
+        @if(isLoading){
+          <i class="fa fa-spinner fa-spin"></i>
+        }
+        Generate
+      </button>
+      <p-toast position="bottom-center" key="bc"/>
+    </form>
+  </div>
+</div>

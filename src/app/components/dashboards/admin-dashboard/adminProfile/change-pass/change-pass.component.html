@@ -1,0 +1,52 @@
+<h6 class="text-center my-4">Change Password</h6>
+<form [formGroup]="changePasswordForm">
+  <div class="showPassword">
+    <input [type]="showPassword == true?'text':'password'" formControlName="currentPassword" placeholder="Current Password" class="form-control">
+    <i *ngIf="!showPassword" (click)="showPassword = true" class="fas fa-eye main-color cursor-pointer"></i>
+    <i *ngIf="showPassword" (click)="showPassword = false" class="fas fa-eye-slash main-color cursor-pointer"></i>
+  </div>
+  @if(changePasswordForm.get('currentPassword')?.errors && changePasswordForm.get('currentPassword')?.touched){
+    <ul class="list-unstyled">
+      @if(changePasswordForm.get('currentPassword')?.getError('required')){
+        <li class="text-danger text-start">please, Enter your current password</li>
+      }
+    </ul>
+  }
+  <div class="showPassword">
+    <input [type]="showRePassword == true?'text':'password'" formControlName="password" placeholder="New Password" class="form-control">
+    <i *ngIf="!showRePassword" (click)="showRePassword = true" class="fas fa-eye main-color cursor-pointer"></i>
+    <i *ngIf="showRePassword" (click)="showRePassword = false" class="fas fa-eye-slash main-color cursor-pointer"></i>
+  </div>
+  @if(changePasswordForm.get("password")?.errors && changePasswordForm.get("password")?.touched){
+    <ul class="list-unstyled">
+      @if(changePasswordForm.get("password")?.getError("required")){
+        <li class="text-danger text-start">please, Enter your new password</li>
+      }
+      @if(changePasswordForm.get("password")?.getError("pattern")){
+        <li class="text-danger text-start">Password must have at least 8 char includs one of (special char, uppercase, number)</li>
+      }
+    </ul>
+  }
+  <div class="showPassword">
+    <input [type]="showConfPassword == true?'text':'password'" formControlName="rePassword" placeholder="Confirm Password" class="form-control">
+    <i *ngIf="!showConfPassword" (click)="showConfPassword = true" class="fas fa-eye main-color cursor-pointer"></i>
+    <i *ngIf="showConfPassword" (click)="showConfPassword = false" class="fas fa-eye-slash main-color cursor-pointer"></i>
+  </div>
+  @if(changePasswordForm.get("rePassword")?.errors && changePasswordForm.get("rePassword")?.touched){
+    <ul class="list-unstyled">
+      @if(changePasswordForm.get("rePassword")?.getError("required")){
+        <li class="text-danger text-start">please, confirm your new password</li>
+      }
+      @if(changePasswordForm.get("rePassword")?.getError("repasswordMatch")){
+        <li class="text-danger text-start">password and confirm password doesnt matched</li>
+      }
+    </ul>
+  }
+  <button class="btn bg-main text-white p-2 my-4 w-100" [disabled]="changePasswordForm.invalid || isLoading" (click)="handleChangePassword(changePasswordForm)" >
+    @if(isLoading){
+      <i class="fa fa-spinner fa-spin"></i>
+    }
+    Update
+  </button>
+  <p-toast position="bottom-center" key="bc"/>
+</form>

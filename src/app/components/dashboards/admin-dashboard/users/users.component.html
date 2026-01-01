@@ -1,0 +1,102 @@
+<div class="container">
+  <div class="myTable">
+
+    @if(isLoading){
+      <div class="loader">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+    <!-- Update User Modal -->
+    <div class="modal fade" #modalElement2 id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="staticBackdropLabel2">Update User</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="updateUserForm">
+              <!-- User Name Field -->
+              <input type="text" class="form-control" formControlName="userName" placeholder="User Name">
+              <div *ngIf="updateUserForm.get('userName')?.errors && updateUserForm.get('userName')?.touched" class="text-danger text-start">
+                <small *ngIf="updateUserForm.get('userName')?.errors?.['required']">User name is required!</small>
+                <small *ngIf="updateUserForm.get('userName')?.errors?.['pattern']">Username can only contain letters, numbers and "_", and must be 1-20 characters long</small>
+              </div>
+
+              <!-- Phone Field -->
+              <input type="text" class="form-control my-3" formControlName="phone" placeholder="Phone">
+              <div *ngIf="updateUserForm.get('phone')?.errors && updateUserForm.get('phone')?.touched" class="text-danger text-start">
+                <small *ngIf="updateUserForm.get('phone')?.errors?.['required']">Phone is required!</small>
+                <small *ngIf="updateUserForm.get('phone')?.errors?.['pattern']">please, enter a valid egyption phone number</small>
+              </div>
+
+              <!-- Email Field -->
+              <input type="email" class="form-control" formControlName="email" placeholder="Email">
+              <div *ngIf="updateUserForm.get('email')?.errors && updateUserForm.get('email')?.touched" class="text-danger text-start">
+                <small *ngIf="updateUserForm.get('email')?.errors?.['required']">Email is required!</small>
+                <small *ngIf="updateUserForm.get('email')?.errors?.['email']">please, enter a valid email</small>
+              </div>
+
+              <!-- Submit Button -->
+              <button data-bs-dismiss="modal" type="button" class="btn bg-main text-white mt-3" [disabled]="updateUserForm.invalid || isLoading" (click)="handleUpdateUser(updateUserForm)">
+                @if(isLoading){
+                  <i class="fa fa-spin fa-spinner"></i>
+                }
+                Update
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone</th>
+        <th></th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+        @if(users.length === 0){
+          <tr >
+            <td colspan="6">
+              <div class="nothing_found">
+                <h4 class="text-center text-danger my-5">No users founded!</h4>
+              </div>
+            </td>
+          </tr>
+        }
+        @for (user of users|alphabeticalOrder;track user.userId; let i=$index){
+          <tr>
+            <th scope="row">{{i+1}}</th>
+            <td>{{ user.userName }}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.phone}}</td>
+            <td data-bs-toggle="modal" data-bs-target="#staticBackdrop2" (click)="handleGetuser(user.userId)"><i class="fas fa-edit bg-main text-white btn py-2"></i></td>
+            <td (click)="handleDelete($event,user.userId)"><i class="fas fa-trash btn btn-danger py-2"></i></td>
+          </tr>
+        }
+      <tr>
+        <td colspan="6">
+          <p-paginator
+            (onPageChange)="onPageChange($event)"
+            [first]="first"
+            [rows]="1"
+            [totalRecords]="totalPages"/>
+        </td>
+      </tr>
+      </tbody>
+      <p-toast position="bottom-center" key="bc" />
+      <p-confirmDialog />
+
+    </table>
+    </div>
+</div>

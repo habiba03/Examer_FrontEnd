@@ -1,0 +1,39 @@
+<div class="contact">
+  <div class="container text-center">
+    <h2>Lets Log you in</h2>
+    <p>Welcome Back ,<br> You have been missed</p>
+    <form [formGroup]="loginForm">
+      <div class="form-group">
+        <input type="text" placeholder="Username" class="form-control" formControlName="adminUserName">
+        @if(loginForm.get('adminUserName')?.errors && loginForm.get('adminUserName')?.touched){
+          <ul class="list-unstyled">
+            @if(loginForm.get('adminUserName')?.getError('required')){
+              <li class="text-danger text-start">please, Enter your username</li>
+            }
+          </ul>
+        }
+        <div class="showPassword">
+          <input [type]="showPassword == true?'text':'password'" placeholder="Password" formControlName="password" class="form-control">
+          <i *ngIf="!showPassword" (click)="showPassword = true" class="fas fa-eye main-color cursor-pointer"></i>
+          <i *ngIf="showPassword" (click)="showPassword = false" class="fas fa-eye-slash main-color cursor-pointer"></i>
+        </div>
+        @if(loginForm.get('password')?.errors && loginForm.get('password')?.touched){
+          <ul class="list-unstyled">
+            @if(loginForm.get('password')?.getError('required')){
+              <li class="text-danger text-start">please, Enter your password</li>
+            }
+          </ul>
+        }
+        <a routerLink="/pages/resetPassword" class="color-main">Forget Password?</a>
+        <button [disabled]="loginForm.invalid || isLoading" (click)="handleLogin(loginForm)" type="submit" class="btn bg-main text-white">
+          @if(isLoading){
+            <i class="fa fa-spinner fa-spin"></i>
+          }
+          Login
+        </button>
+        <p-toast position="bottom-center" key="bc" />
+      </div>
+    </form>
+  </div>
+
+</div>

@@ -1,0 +1,46 @@
+<div class="container">
+  <h3>Categories</h3>
+
+  <div class="row">
+    @if(isLoading){
+      <div class="row row-cols-2 py-5">
+        <div *ngFor="let item of [0,1,2,3]" class="col mb-3">
+          <p-skeleton width="100%" height="220px" styleClass="mr-2" />
+          <p-skeleton width="30%" styleClass="my-2" />
+          <p-skeleton width="60%" styleClass="my-2" />
+          <div class="d-flex justify-content-end align-items-center w-100">
+            <p-skeleton width="4rem" height="2rem" styleClass="my-2 " />
+          </div>
+        </div>
+      </div>
+    }
+@if(!isLoading){
+  @if(categories.length === 0){
+    <div class="nothing_found">
+      <h2 class="text-center text-danger my-5">No categories founded!</h2>
+    </div>
+  }
+  @for(category of categories; track category.categoryName){
+    <div class="col-md-6 col-sm-12">
+      <div class="exam_card my-4">
+        <div class="leftSide">
+          <img src="images/exam.png" alt="exam_logo" class="img-fluid">
+          <h4>{{ category.categoryName }}</h4>
+        </div>
+        <p><img src="images/question.png" alt="question"> Number Of Questions: {{category.num_totalQuestions}}</p>
+        <div class="btns float-end">
+          <button class="btn bg-main text-white" [routerLink]="['/dashboard/superAdmin/editCategory',category.categoryName]">Edit</button>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  }
+}
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="first"
+      [rows]="1"
+      [totalRecords]="totalPages"/>
+
+  </div>
+</div>

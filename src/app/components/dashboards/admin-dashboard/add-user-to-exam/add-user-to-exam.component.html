@@ -1,0 +1,89 @@
+<div class="container">
+  <h3>{{examName|titlecase}} Exam</h3>
+  <div class="mySelect">
+    <p-dropdown
+      [options]="usersName"
+      optionLabel="name"
+      [filter]="true"
+      filterBy="name"
+      [showClear]="true"
+      (onChange)="handleDropDown($event)"
+      placeholder="Select an user">
+      <ng-template pTemplate="selectedItem" let-selectedOption>
+        <div class="flex align-items-center gap-2">
+          <div>@if(isSelected){
+            {{ selectedOption.name }}
+          }@else{
+            Select an user
+          }
+          </div>
+        </div>
+      </ng-template>
+      <ng-template let-country pTemplate="item">
+        <div class="flex align-items-center gap-2">
+          <div>{{ country.name }}</div>
+        </div>
+      </ng-template>
+    </p-dropdown>
+<!--    <p-multiSelect-->
+<!--      [options]="usersName"-->
+<!--      [(ngModel)]="selectedUsers"-->
+<!--      (onChange)="handleMultiselect($event)"-->
+<!--      optionLabel="name"-->
+<!--      placeholder="Select User" />-->
+    <button class="btn bg-main text-white" [disabled]="!isSelected || isLoading"  (click)="handleAssignUsers()">
+      @if(isLoading){
+        <i class="fa fa-spinner fa-spin"></i>
+      }
+      Assign to exam
+    </button>
+  </div>
+  <div class="myTable">
+    @if(isLoading){
+      <div class="loader">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Phone</th>
+      </tr>
+      </thead>
+      <tbody>
+        @if(assignedUsers.length === 0){
+        <tr >
+          <td colspan="4">
+              <div class="nothing_found">
+                <h4 class="text-center text-danger my-5">No users assigned to this exam!</h4>
+              </div>
+          </td>
+        </tr>
+        }
+      @for(assignedUser of assignedUsers; track assignedUser.userId; let i=$index){
+        <tr>
+          <th scope="row">{{i+1}}</th>
+          <td>{{ assignedUser.userName }}</td>
+          <td>{{assignedUser.email}}</td>
+          <td>{{assignedUser.phone}}</td>
+        </tr>
+      }
+      <tr>
+        <td colspan="4">
+          <p-paginator
+            (onPageChange)="onPageChange($event)"
+            [first]="first"
+            [rows]="1"
+            [totalRecords]="totalPages"/>
+        </td>
+      </tr>
+<p-toast position="bottom-center" key="bc"/>
+      </tbody>
+    </table>
+  </div>
+</div>
