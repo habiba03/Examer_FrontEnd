@@ -4,16 +4,56 @@
       <div class="side_bar bg-main">
         <img src="images/logo2.svg" alt="logo" class="img-fluid">
         <ul class="list-unstyled">
-          <li [ngClass]="{'active': activeSec === 'exams'}" (click)="setActivity('exams')" routerLink="/dashboard/admin/exams"><span><img src="images/exams.png"> All Exams</span></li>
-          <li [ngClass]="{'active': activeSec === 'newExam'}" (click)="setActivity('newExam')" routerLink="/dashboard/admin/newExam"><span><img src="images/new.png"> Add New Exam</span></li>
-          <li [ngClass]="{'active': activeSec === 'users'}" (click)="setActivity('users')" routerLink="/dashboard/admin/users"><span><img src="images/users.png"> Active Users</span></li>
-          <li [ngClass]="{'active': activeSec === 'addUser'}" (click)="setActivity('addUser')" routerLink="/dashboard/admin/addUser"><span><img src="images/addUser.png"> Add New User</span></li>
-          <li [ngClass]="{'active': activeSec === 'score'}" (click)="setActivity('score')" routerLink="/dashboard/admin/score"><span><img src="images/score.png"> All Scores</span></li>
-          <li [ngClass]="{'active': activeSec === 'deletedUsers'}" (click)="setActivity('deletedUsers')" routerLink="/dashboard/admin/deletedUsers"><span><img src="images/delete.png"> Deleted Users</span></li>
+          <!-- Exams Section with Dropdown -->
+          <li class="parent-menu" [ngClass]="{'expanded': expandedSections['exams']}">
+            <div class="menu-header" (click)="toggleSection('exams')">
+              <span><img src="images/exams.png"> Exams</span>
+              <svg class="chevron" [ngClass]="{'rotated': expandedSections['exams']}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+            <ul class="submenu" [ngClass]="{'show': expandedSections['exams']}">
+              <li [ngClass]="{'active': activeSec === 'exams'}" (click)="setActivity('exams')" routerLink="/dashboard/admin/exams">
+                <span><img src="images/exams.png"> All Exams</span>
+              </li>
+              <li [ngClass]="{'active': activeSec === 'newExam'}" (click)="setActivity('newExam')" routerLink="/dashboard/admin/newExam">
+                <span><img src="images/new.png"> Add New Exam</span>
+              </li>
+              <li [ngClass]="{'active': activeSec === 'score'}" (click)="setActivity('score')" routerLink="/dashboard/admin/score">
+                <span><img src="images/score.png"> All Scores</span>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Users Section with Dropdown -->
+          <li class="parent-menu" [ngClass]="{'expanded': expandedSections['users']}">
+            <div class="menu-header" (click)="toggleSection('users')">
+              <span><img src="images/users.png"> Users</span>
+              <svg class="chevron" [ngClass]="{'rotated': expandedSections['users']}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </div>
+            <ul class="submenu" [ngClass]="{'show': expandedSections['users']}">
+              <li [ngClass]="{'active': activeSec === 'users'}" (click)="setActivity('users')" routerLink="/dashboard/admin/users">
+                <span><img src="images/users.png"> Active Users</span>
+              </li>
+              <li [ngClass]="{'active': activeSec === 'addUser'}" (click)="setActivity('addUser')" routerLink="/dashboard/admin/addUser">
+                <span><img src="images/addUser.png"> Add New User</span>
+              </li>
+              <li [ngClass]="{'active': activeSec === 'deletedUsers'}" (click)="setActivity('deletedUsers')" routerLink="/dashboard/admin/deletedUsers">
+                <span><img src="images/delete.png"> Deleted Users</span>
+              </li>
+            </ul>
+          </li>
         </ul>
+
         <ul class="list-unstyled">
-          <li [ngClass]="{'active': activeSec === 'changeInfo'|| activeSec === 'changePass'}" (click)="setActivity('changeInfo')" routerLink="/dashboard/admin/profile"><span><img src="images/profile.png"> Profile</span></li>
-          <li (click)="handleLogOut()"><span><img src="images/logout.png"> Logout</span></li>
+          <li [ngClass]="{'active': activeSec === 'changeInfo'|| activeSec === 'changePass'}" (click)="setActivity('changeInfo')" routerLink="/dashboard/admin/profile">
+            <span><img src="images/profile.png"> Profile</span>
+          </li>
+          <li (click)="handleLogOut()">
+            <span><img src="images/logout.png"> Logout</span>
+          </li>
         </ul>
       </div>
     </div>
@@ -55,5 +95,3 @@
     </div>
   </div>
 </div>
-
-

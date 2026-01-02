@@ -265,6 +265,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
         if (selectedIndex !== -1) {
           answers.push({
             questionId: question.questionId,
+            questionText: question.questionText,
             selectedOptionIndexes: [selectedIndex]
           });
         }
