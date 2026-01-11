@@ -40,6 +40,7 @@ export const routes: Routes = [
           {path:'addUser' , loadComponent:()=>import("./components/dashboards/admin-dashboard/add-user/add-user.component").then(c=>c.AddUserComponent)},
           {path:'deletedUsers' , loadComponent:()=>import("./components/dashboards/admin-dashboard/deleted-users/deleted-users.component").then(c=>c.DeletedUsersComponent)},
           {path:'score' , loadComponent:()=>import("./components/dashboards/admin-dashboard/score/score.component").then(c=>c.ScoreComponent)},
+          {path:'viewUserAnswers/:submissionId/:userName/:examName/:score' , loadComponent:()=>import("./components/dashboards/admin-dashboard/view-user-answers/view-user-answers.component").then(c=>c.ViewUserAnswersComponent)},
           {path:'profile' , loadComponent:()=>import("./components/dashboards/admin-dashboard/adminProfile/profile.component").then(c=>c.ProfileComponent),children:[
               {path:'', redirectTo:'changeInfo', pathMatch:'full'},
               {path:'changeInfo', component:ChangeInfoComponent},

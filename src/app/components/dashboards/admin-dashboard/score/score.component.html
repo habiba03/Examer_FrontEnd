@@ -46,13 +46,31 @@
         }
       @for(res of results.value|alphabeticalOrder;track res.userName; let i=$index){
         <tr>
-          <th scope="row">{{i+1}}</th>
-          <td>{{res.userName}}</td>
-          <td>{{res.examName}}</td>
-          <td>{{res.score}} out of {{total_mark}}</td>
-          <td class="text-white" [ngClass]="{'bg-success': res.score >= passMark, 'bg-danger': res.score < passMark}">{{ res.score >= passMark ? 'Success' : 'Fail' }}</td>
-          <td><button class="btn btn-outline-info" (click)="handleReset(res)">Reset</button></td>
+            <th scope="row">{{i+1}}</th>
+            <td>{{res.userName}}</td>
+            <td>{{res.examName}}</td>
+            <td>{{res.score}} out of {{total_mark}}</td>
+            <td class="text-white"
+                [ngClass]="{
+                  'bg-success': res.score >= passMark,
+                  'bg-danger': res.score < passMark
+                }">
+              {{ res.score >= passMark ? 'Success' : 'Fail' }}
+            </td>
+
+            <td>
+              <button class="btn btn-outline-info btn-sm" (click)="handleReset(res)">
+                Reset
+              </button>
+            </td>
+
+            <td>
+              <button class="btn btn-outline-primary btn-sm" (click)="viewAnswers(res)">
+                View Answers
+              </button>
+            </td>
         </tr>
+
       }
       <tr>
         <td colspan="5">

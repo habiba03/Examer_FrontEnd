@@ -23,4 +23,15 @@ export class ExamService {
   updateUserScore(examId:string, data:any):Observable<any>{
     return this._HttpClient.put(`/api/v1/assignupdate`,data,{params:{id:examId}});
   }
+
+  getUserAnswersBySubmission(submissionId: number): Observable<any> {
+  return this._HttpClient.get(`/api/v1/user-answers/submission/${submissionId}`);
+}
+
+
+getExamScore(submissionId: number): Observable<any> {
+  return this._HttpClient.get(`/api/v1/submission/${submissionId}/score`);
+}
+
+
 }

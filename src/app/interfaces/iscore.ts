@@ -3,7 +3,8 @@ export interface IscoreContentData {
   userId:number,
   userName:string,
   examName:string,
-  score:number
+  score:number,
+  examSubmissionId: number; 
 }
 export interface IscoreData {
   content:IscoreContentData[],

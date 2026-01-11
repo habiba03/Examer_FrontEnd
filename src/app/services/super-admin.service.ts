@@ -37,6 +37,15 @@ export class SuperAdminService {
     return this._HttpClient.post(`/api/v1/addQuestion/${difficulty}`, data,{params:{page:pageNumber}});
   }
 
+  uploadQuestionsExcel(file: File, pageNumber: number = 0): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return this._HttpClient.post("/api/v1/uploadQuestionsExcel", formData, {
+      params: { page: pageNumber }
+    });
+  }
+
   getQuestion(id:number):Observable<any>{
     return this._HttpClient.get(`/api/v1/getQuestionById/${id}`)
   }

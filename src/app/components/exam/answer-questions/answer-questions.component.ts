@@ -13,7 +13,7 @@ import { UserAnswerPayload } from "../../../interfaces/iuserAnswer";
   standalone: true,
   imports: [ReactiveFormsModule, TitleCasePipe, NgForOf, SkeletonModule, CommonModule],
   templateUrl: './answer-questions.component.html',
-  styleUrl: './answer-questions.component.scss'
+  styleUrls: ['./answer-questions.component.scss']
 })
 export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 
@@ -30,6 +30,8 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   examId: any = '';
   isLoading: boolean = true;
   reloadCount: number = 0;
+
+  score: number | null = null; // <-- user score
 
   secondsCount: number = 0;
   minutes: number = 0;
@@ -76,8 +78,6 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
         this.examTitle = res.data.examTitle;
         this.username = res.data.userName;
 
-        console.log('Exam ID:', this.examId);
-
         this.currentQuestion();
         this.userAnswers = new Array(this.examLength).fill(null);
 
@@ -97,9 +97,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanupListeners();
-    if (this.countdownTimer) {
-      clearInterval(this.countdownTimer);
-    }
+    if (this.countdownTimer) clearInterval(this.countdownTimer);
   }
 
   currentQuestion() {
@@ -208,14 +206,9 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 
     this.userAnswers.forEach((answer, index) => {
       const question = this.examQuestions[index];
-      
-      // Skip unanswered questions (null or undefined)
-      if (answer === null || answer === undefined) {
-        return;
-      }
+      if (answer === null || answer === undefined) return;
 
       if (question.questionType === 'WRITTEN') {
-        // Only add if written answer exists and is not empty
         if (typeof answer === 'string' && answer.trim().length > 0) {
           answers.push({
             questionId: question.questionId,
@@ -223,13 +216,10 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
           });
         }
       } else if (question.questionType === 'MCQ' && this.allowsMultipleAnswers(question)) {
-        // For multiple choice questions with checkboxes
         if (Array.isArray(answer)) {
           const selectedIndexes = answer
             .map((selected: boolean, idx: number) => selected ? idx : -1)
             .filter((idx: number) => idx !== -1);
-          
-          // Only add if at least one option is selected
           if (selectedIndexes.length > 0) {
             answers.push({
               questionId: question.questionId,
@@ -238,30 +228,19 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
           }
         }
       } else {
-        // For single-choice MCQ (radio buttons)
         let selectedIndex = -1;
-        
-        // Try to find the index of the selected option
         if (typeof answer === 'string' || typeof answer === 'number') {
           selectedIndex = question.options.findIndex((opt: any) => {
-            // Handle string options
-            if (typeof opt === 'string') {
-              return opt === answer;
-            }
-            // Handle object options with text/value properties
+            if (typeof opt === 'string') return opt === answer;
             if (typeof opt === 'object' && opt !== null) {
               return opt.text === answer || opt.value === answer || JSON.stringify(opt) === JSON.stringify(answer);
             }
             return false;
           });
         }
-        
-        // If answer is already an index number
         if (selectedIndex === -1 && typeof answer === 'number' && answer >= 0 && answer < question.options.length) {
           selectedIndex = answer;
         }
-        
-        // Only add if a valid option was selected
         if (selectedIndex !== -1) {
           answers.push({
             questionId: question.questionId,
@@ -272,20 +251,17 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
       }
     });
 
-    const payload = {
+    return {
       examSubmissionId: this.examId,
       answers: answers
     };
-
-    console.log('Payload being sent:', JSON.stringify(payload, null, 2));
-    return payload;
   }
 
   handleSubmit() {
     this.saveCurrentAnswer();
-    
+
     const answeredCount = this.userAnswers.filter(a => a !== null && a !== undefined).length;
-    
+
     if (answeredCount === 0) {
       Swal.fire({
         title: "No answers!",
@@ -317,14 +293,14 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
         this.isSubmitted = true;
         this.optionsForm.disable();
         this.cleanupListeners();
-        if (this.countdownTimer) {
-          clearInterval(this.countdownTimer);
-        }
+        if (this.countdownTimer) clearInterval(this.countdownTimer);
+
+        if (res?.score !== undefined) this.score = res.score;
 
         Swal.fire({
           title: "Success!",
-          text: res?.score !== undefined
-            ? `Your exam was submitted successfully! Your score: ${res.score}`
+          text: this.score !== null
+            ? `Your exam was submitted successfully! Your score: ${this.score}`
             : "Your exam was submitted successfully!",
           icon: "success",
           allowOutsideClick: false,
@@ -346,7 +322,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 
   AutoSubmitExam() {
     if (this.isSubmitted) return;
-    
+
     this.saveCurrentAnswer();
     const payload = this.buildUserAnswerPayload();
 
@@ -362,14 +338,14 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
           this.isSubmitted = true;
           this.optionsForm.disable();
           this.cleanupListeners();
-          if (this.countdownTimer) {
-            clearInterval(this.countdownTimer);
-          }
-          
+          if (this.countdownTimer) clearInterval(this.countdownTimer);
+
+          if (res?.score !== undefined) this.score = res.score;
+
           Swal.fire({
             title: "Success!",
-            text: res?.score !== undefined
-              ? `Your exam was submitted successfully! Your score: ${res.score}`
+            text: this.score !== null
+              ? `Your exam was submitted successfully! Your score: ${this.score}`
               : "Your exam was submitted successfully!",
             icon: "success",
             allowOutsideClick: false,
@@ -393,7 +369,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   detectTabSwitch() {
     this.visibilityChangeHandler = () => {
       if (this.isSubmitted) return;
-      if (document.hidden && !this.isSubmitted) {
+      if (document.hidden) {
         this.saveCurrentAnswer();
 
         Swal.fire({
@@ -411,11 +387,9 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   enterFullScreen() {
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
-      elem.requestFullscreen().catch(err => {
-        console.warn('Failed to enter fullscreen:', err);
-      });
+      elem.requestFullscreen().catch(err => console.warn('Failed to enter fullscreen:', err));
     }
-    
+
     this.fullscreenChangeHandler = this.handleFullScreenChange.bind(this);
     document.addEventListener('fullscreenchange', this.fullscreenChangeHandler);
   }
@@ -436,31 +410,28 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
     this.contextMenuHandler = (event: MouseEvent) => { 
       if (!this.isSubmitted) event.preventDefault(); 
     };
-    
+
     this.keydownHandler = (event: KeyboardEvent) => {
       if (this.isSubmitted) return;
-      
+
       if (event.key === 'F5' || (event.ctrlKey && event.key === 'r')) {
         event.preventDefault();
         this.reloadCount++;
-        if (this.reloadCount > 1) {
-          this.AutoSubmitExam();
-        } else {
-          Swal.fire({
-            title: "Warning!",
-            text: "Reloading the page is not allowed. If you reload again, your exam will be submitted automatically.",
-            icon: "warning",
-            allowOutsideClick: false,
-            confirmButtonText: "OK",
-          });
-        }
+        if (this.reloadCount > 1) this.AutoSubmitExam();
+        else Swal.fire({
+          title: "Warning!",
+          text: "Reloading the page is not allowed. If you reload again, your exam will be submitted automatically.",
+          icon: "warning",
+          allowOutsideClick: false,
+          confirmButtonText: "OK",
+        });
       }
-      
+
       if ((event.ctrlKey && ['c', 'v', 'x', 'a', 's'].includes(event.key.toLowerCase())) || event.key === 'F12') {
         event.preventDefault();
       }
     };
-    
+
     document.addEventListener('contextmenu', this.contextMenuHandler);
     document.addEventListener('keydown', this.keydownHandler);
   }
@@ -477,35 +448,21 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
       this.hours = Math.floor(this.minutes / 60);
       this.remMinutes = this.minutes % 60;
 
-      if (this.secondsCount > 0) {
-        this.secondsCount--;
-      } else { 
-        clearInterval(this.countdownTimer); 
-        this.AutoSubmitExam(); 
-      }
+      if (this.secondsCount > 0) this.secondsCount--;
+      else clearInterval(this.countdownTimer), this.AutoSubmitExam();
     }, 1000);
   }
 
   exitFullScreen() {
     if (document.exitFullscreen && document.fullscreenElement) {
-      document.exitFullscreen().catch(err => {
-        console.warn('Failed to exit fullscreen:', err);
-      });
+      document.exitFullscreen().catch(err => console.warn('Failed to exit fullscreen:', err));
     }
   }
 
   cleanupListeners() {
-    if (this.fullscreenChangeHandler) {
-      document.removeEventListener('fullscreenchange', this.fullscreenChangeHandler);
-    }
-    if (this.visibilityChangeHandler) {
-      document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
-    }
-    if (this.contextMenuHandler) {
-      document.removeEventListener('contextmenu', this.contextMenuHandler);
-    }
-    if (this.keydownHandler) {
-      document.removeEventListener('keydown', this.keydownHandler);
-    }
+    if (this.fullscreenChangeHandler) document.removeEventListener('fullscreenchange', this.fullscreenChangeHandler);
+    if (this.visibilityChangeHandler) document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+    if (this.contextMenuHandler) document.removeEventListener('contextmenu', this.contextMenuHandler);
+    if (this.keydownHandler) document.removeEventListener('keydown', this.keydownHandler);
   }
 }

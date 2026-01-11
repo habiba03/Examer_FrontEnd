@@ -10,6 +10,7 @@ import {ToastModule} from "primeng/toast";
 import {NgClass} from "@angular/common";
 import {BehaviorSubject} from "rxjs";
 import {AlphabeticalOrderPipe} from "../../../../pipes/alphabetical-order.pipe";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-score',
@@ -37,7 +38,7 @@ export class ScoreComponent implements OnInit{
   passMark:number = 0;
   private examId: any;
 
-  constructor(private _AdminService:AdminService, private _AuthService:AuthService, private messageService:MessageService) {
+  constructor(private _AdminService:AdminService, private _AuthService:AuthService, private messageService:MessageService, private router:Router) {
   }
 
   first: number = 0;
@@ -119,4 +120,11 @@ export class ScoreComponent implements OnInit{
       }
     })
   }
+
+  viewAnswers(res: any) {
+  this.router.navigate([
+    '/dashboard/admin/viewUserAnswers',
+    res.examSubmissionId,res.userName, res.examName,res.score
+  ]);
+}
 }
