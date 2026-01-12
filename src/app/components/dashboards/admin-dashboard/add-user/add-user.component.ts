@@ -4,6 +4,7 @@ import {AdminService} from "../../../../services/admin.service";
 import {AuthService} from "../../../../services/auth.service";
 import {MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-user',
@@ -17,6 +18,10 @@ import {ToastModule} from "primeng/toast";
   styleUrl: './add-user.component.scss'
 })
 export class AddUserComponent {
+  selectedFile: File | null = null;
+  uploadProgress: number = 0;
+  isDragOver: boolean = false;
+  
   addUserForm:FormGroup = new FormGroup({
     userName: new FormControl(null, [Validators.required, Validators.pattern(/^[a-zA-Z_]{1,20}$/)]),
     phone: new FormControl(null, [Validators.required, Validators.pattern(/^(010|011|012|015)[0-9]{8}$/)]),
@@ -45,5 +50,9 @@ export class AddUserComponent {
       }
     })
   }
+
+
+
+  
 
 }

@@ -1,62 +1,98 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, RouterLink, RouterOutlet} from "@angular/router";
-import {NgClass, UpperCasePipe} from "@angular/common";
-import {AuthService} from "../../../services/auth.service";
-import {AdminNamePipe} from "../../../pipes/admin-name.pipe";
-import {ProfileService} from "../../../services/profile.service";
-import {IadminData} from "../../../interfaces/iadmin";
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from "@angular/router";
+import { AuthService } from "../../../services/auth.service";
+import { NgClass, UpperCasePipe } from "@angular/common";
+import { AdminNamePipe } from "../../../pipes/admin-name.pipe";
 
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
   imports: [
-    RouterLink,
     RouterOutlet,
+    RouterLink,
     NgClass,
-    AdminNamePipe,
-    UpperCasePipe
+    UpperCasePipe,
+    AdminNamePipe
   ],
   templateUrl: './super-admin-dashboard.component.html',
   styleUrl: './super-admin-dashboard.component.scss'
 })
-export class SuperAdminDashboardComponent implements OnInit{
-  activeSec: string = "categories";
-  adminName!:string;
-  adminId!:number;
-  constructor(private _AuthService:AuthService, private _ProfileService:ProfileService) {
+export class SuperAdminDashboardComponent implements OnInit {
+  
+  activeSec: string = 'categories';
+  adminName: string = '';
+  
+  // Track expanded sections
+  expandedSections: { [key: string]: boolean } = {
+    categories: false,
+    admins: false,
+    questions: false
+  };
+
+  constructor(
+    private _Router: Router,
+    private _AuthService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this._AuthService.decodeToken();
+    this.adminName = this._AuthService.decodedTokenInfo.value.name;
+    
+    // Set initial expanded section based on current route
+    this.initializeExpandedSections();
   }
 
-  ngOnInit() {
-    this._AuthService.decodeToken()
-    this.adminId = this._AuthService.decodedTokenInfo.value.id;
+  setActivity(activity: string): void {
+    this.activeSec = activity;
+  }
 
-    const url = window.location.href.split("/");
-    this.activeSec = url[url.length -1];
+  toggleSection(section: string): void {
+    this.expandedSections[section] = !this.expandedSections[section];
+  }
 
-    this._ProfileService.getAdminById(this.adminId).subscribe({
-      next:(res)=>{
-        this._ProfileService.admin.next(res.data);
-        this._ProfileService.admin.subscribe(data=>this.adminName = data.adminUserName);
-
-      },
-      error:(err)=>{
-
+  initializeExpandedSections(): void {
+    const currentUrl = this._Router.url;
+    
+    // Expand Categories section
+    if (currentUrl.includes('categories') || currentUrl.includes('addCategory')) {
+      this.expandedSections['categories'] = true;
+      if (currentUrl.includes('categories')) {
+        this.activeSec = 'categories';
+      } else if (currentUrl.includes('addCategory')) {
+        this.activeSec = 'addCategory';
       }
-    })
-  }
-
-  setActivity(secName: string) {
-    this.activeSec = secName;
-  }
-
-  handleLogout(){
-    this._AuthService.logout().subscribe({
-      next:(res)=>{
-
-      },
-      error:(err)=>{
-
+    }
+    
+    // Expand Admins section
+    if (currentUrl.includes('admins') || currentUrl.includes('addAdmin') || currentUrl.includes('deletedAdmins')) {
+      this.expandedSections['admins'] = true;
+      if (currentUrl.includes('deletedAdmins')) {
+        this.activeSec = 'deletedAdmins';
+      } else if (currentUrl.includes('addAdmin')) {
+        this.activeSec = 'addAdmin';
+      } else {
+        this.activeSec = 'admins';
       }
-    });
-}
+    }
+    
+    // Expand Questions section
+    if (currentUrl.includes('aiBot') || currentUrl.includes('uploadQuestions')) {
+      this.expandedSections['questions'] = true;
+      if (currentUrl.includes('uploadQuestions')) {
+        this.activeSec = 'uploadQuestions';
+      } else {
+        this.activeSec = 'aiBot';
+      }
+    }
+
+    // Profile
+    if (currentUrl.includes('profile')) {
+      this.activeSec = 'changeInfo';
+    }
+  }
+
+  handleLogout(): void {
+    localStorage.removeItem('userToken');
+    this._Router.navigate(['/pages/login']);
+  }
 }

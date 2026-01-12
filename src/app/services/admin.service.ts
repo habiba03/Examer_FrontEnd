@@ -46,6 +46,23 @@ export class AdminService {
     return this._HttpClient.post("/api/v1/addUser",data);
   }
 
+  uploadUsersExcel(file: File, adminId: number): Observable<any> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('adminId', adminId.toString());
+
+  return this._HttpClient.post<any>(`/api/v1/uploadUsersExcel`,
+    formData
+  );
+}
+
+
+  // uploadUsersExcel(file: File, pageNumber: number = 0): Observable<any> {
+  //   const formData = new FormData();
+  //   formData.append('file', file);  
+  //   return this._HttpClient.post('/api/v1/uploadUsersExcel', formData, { params: { page: pageNumber } })
+  // }
+
   getAllExams(id:number,pageNumber:number):Observable<Iexam>{
     return this._HttpClient.get<Iexam>(`/api/v1/getAllExamsByAdminId/${id}`,{params:{page:pageNumber}})
   }
