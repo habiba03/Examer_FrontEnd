@@ -33,5 +33,9 @@ getExamScore(submissionId: number): Observable<any> {
   return this._HttpClient.get(`/api/v1/submission/${submissionId}/score`);
 }
 
+rateWrittenExam(submissionId: number, body: any): Observable<any> {
+    return this._HttpClient.put(`/api/v1/rateWrittenExam/${submissionId}`, body);
+  }
+
 
 }
