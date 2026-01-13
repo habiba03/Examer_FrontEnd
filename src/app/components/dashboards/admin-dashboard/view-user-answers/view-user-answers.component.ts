@@ -154,6 +154,9 @@ submitWrittenRatings() {
       });
     }
   });
+  this._Router.navigate(['/dashboard/admin/score']);
 }
+
+
 
 }

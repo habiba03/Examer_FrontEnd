@@ -98,13 +98,21 @@
           </div>
 
           <!-- Rating Dropdown -->
-          <div class="mb-3">
-            <label class="form-label me-2">Rate this answer:</label>
-            <select class="form-select d-inline-block w-auto"
-                    [(ngModel)]="question.writtenScore">
-              <option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{ r }}</option>
-            </select>
+          <div class="btn-group" role="group">
+            <label *ngFor="let r of [1,2,3,4,5]"
+                  class="btn"
+                  [class.btn-primary]="question.writtenScore === r"
+                  [class.btn-outline-primary]="question.writtenScore !== r">
+              <input type="radio" 
+                    [value]="r" 
+                    [(ngModel)]="question.writtenScore"
+                    style="display: none;">
+              {{ r }}
+            </label>
           </div>
+
+
+
         </div>
 
         <!-- ========== MCQ / TRUE-FALSE ANSWERS ========== -->

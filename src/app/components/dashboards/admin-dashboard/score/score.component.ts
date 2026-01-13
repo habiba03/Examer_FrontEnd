@@ -12,6 +12,125 @@ import {BehaviorSubject} from "rxjs";
 import {AlphabeticalOrderPipe} from "../../../../pipes/alphabetical-order.pipe";
 import {Router} from "@angular/router";
 
+// @Component({
+//   selector: 'app-score',
+//   standalone: true,
+//   imports: [
+//     DropdownModule,
+//     PaginatorModule,
+//     PrimeTemplate,
+//     ReactiveFormsModule,
+//     ToastModule,
+//     NgClass,
+//     AlphabeticalOrderPipe
+//   ],
+//   providers:[MessageService],
+//   templateUrl: './score.component.html',
+//   styleUrl: './score.component.scss'
+// })
+// export class ScoreComponent implements OnInit{
+//   examsName: any[]=[];
+//   exams:any[]=[];
+//   adminId:number = 0;
+//   results= new BehaviorSubject<IscoreContentData[]>([]);
+//   isLoading:boolean=true;
+//   total_mark:number = 0;
+//   passMark:number = 0;
+//   private examId: any;
+
+//   constructor(private _AdminService:AdminService, private _AuthService:AuthService, private messageService:MessageService, private router:Router) {
+//   }
+
+//   first: number = 0;
+//   totalPages: number = 0;
+
+//   onPageChange(event: any) {
+//     this.first = event.first;
+//     this.isLoading = true;
+//     this._AdminService.getUsersForAdminExam(this.examId, this.adminId, this.first).subscribe({
+//       next:(res)=>{
+//         this.results.next(res.data.content);
+//         this.totalPages = res.data.totalPages;
+//         this.isLoading =false;
+
+//       },
+//       error:(err)=>{
+//         this.isLoading =false;
+
+//       }
+//     })
+//   }
+
+//   ngOnInit(): void {
+//     this._AuthService.decodeToken();
+//     this.adminId = this._AuthService.decodedTokenInfo.value.id;
+//     this._AdminService.getAdminExamsList(this.adminId).subscribe({
+//       next:(res)=>{
+//         this.exams = res.data;
+//         for(let exam of this.exams){
+//           let examName = { name : exam.examTitle, id:exam.examId, total_mark:exam.totalQuestions};
+//           this.examsName.push(examName);
+
+//         }
+//         this.isLoading=false;
+//       },
+//       error:(err)=>{
+//         this.isLoading=false;
+
+//       }
+//     })
+//   }
+
+
+//   handleDropDown(event: any) {
+//     this.examId = event.value.id;
+//     this.total_mark = event.value.total_mark;
+//     this.passMark = Math.ceil(0.5 * event.value.total_mark);
+//     this.isLoading = true;
+//     this.first = 0; // Reset pagination to the first page when a new exam is selected
+//     this._AdminService.getUsersForAdminExam(this.examId, this.adminId, this.first).subscribe({
+//       next:(res)=>{
+//         this.results.next(res.data.content);
+//         this.totalPages = res.data.totalPages;
+//         this.isLoading = false;
+
+//       },error:(err)=>{
+//         this.results.next([]);
+//         this.totalPages = 0;
+//         this.isLoading=false;
+//         this.messageService.add({severity:'error',summary:'Error!',detail:err.error.message,key:'bc'});
+
+//       }
+//     })
+//   }
+
+//   handleReset(user:any) {
+//     let resetData = {
+//       userId:user.userId,
+//       examId:this.examId
+//     }
+//     this._AdminService.resetUserExam(resetData).subscribe({
+//       next:(res)=>{
+//         const updated = this.results.value.filter(u => u.userId !== user.userId);
+//         this.results.next(updated);
+//         this.messageService.add({severity:'success',summary:'Success',detail:res.message,key:'bc'});
+//       },
+//       error:(err)=>{
+//         this.messageService.add({severity:'error',summary:'Error!',detail:err.error.message,key:'bc'});
+//       }
+//     })
+//   }
+
+//   viewAnswers(res: any) {
+//   this.router.navigate([
+//     '/dashboard/admin/viewUserAnswers',
+//     res.examSubmissionId,res.userName, res.examName,res.score
+//   ]);
+// }
+// }
+
+
+
 @Component({
   selector: 'app-score',
   standalone: true,
@@ -24,87 +143,91 @@ import {Router} from "@angular/router";
     NgClass,
     AlphabeticalOrderPipe
   ],
-  providers:[MessageService],
+  providers: [MessageService],
   templateUrl: './score.component.html',
   styleUrl: './score.component.scss'
 })
-export class ScoreComponent implements OnInit{
-  examsName: any[]=[];
-  exams:any[]=[];
-  adminId:number = 0;
-  results= new BehaviorSubject<IscoreContentData[]>([]);
-  isLoading:boolean=true;
-  total_mark:number = 0;
-  passMark:number = 0;
-  private examId: any;
+export class ScoreComponent implements OnInit {
 
-  constructor(private _AdminService:AdminService, private _AuthService:AuthService, private messageService:MessageService, private router:Router) {
-  }
+  examsName: any[] = [];
+  exams: any[] = [];
+  adminId = 0;
 
-  first: number = 0;
-  totalPages: number = 0;
+  results = new BehaviorSubject<IscoreContentData[]>([]);
+  isLoading = true;
 
-  onPageChange(event: any) {
-    this.first = event.first;
-    this.isLoading = true;
-    this._AdminService.getUsersForAdminExam(this.examId, this.adminId, this.first).subscribe({
-      next:(res)=>{
-        this.results.next(res.data.content);
-        this.totalPages = res.data.totalPages;
-        this.isLoading =false;
+  total_mark = 0;
+  passMark = 0;
 
-      },
-      error:(err)=>{
-        this.isLoading =false;
+  examId!: number;
+  first = 0;
+  totalPages = 0;
 
-      }
-    })
-  }
+  constructor(
+    private _AdminService: AdminService,
+    private _AuthService: AuthService,
+    private messageService: MessageService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this._AuthService.decodeToken();
     this.adminId = this._AuthService.decodedTokenInfo.value.id;
+
     this._AdminService.getAdminExamsList(this.adminId).subscribe({
-      next:(res)=>{
+      next: (res) => {
         this.exams = res.data;
-        for(let exam of this.exams){
-          let examName = { name : exam.examTitle, id:exam.examId, total_mark:exam.totalQuestions};
-          this.examsName.push(examName);
-
-        }
-        this.isLoading=false;
+        this.examsName = this.exams.map((exam: any) => ({
+          name: exam.examTitle,
+          id: exam.examId
+        }));
+        this.isLoading = false;
       },
-      error:(err)=>{
-        this.isLoading=false;
-
-      }
-    })
+      error: () => this.isLoading = false
+    });
   }
-
 
   handleDropDown(event: any) {
     this.examId = event.value.id;
-    this.total_mark = event.value.total_mark;
-    this.passMark = Math.ceil(0.5 * event.value.total_mark);
-    this.isLoading = true;
-    this.first = 0; // Reset pagination to the first page when a new exam is selected
-    this._AdminService.getUsersForAdminExam(this.examId, this.adminId, this.first).subscribe({
-      next:(res)=>{
-        this.results.next(res.data.content);
-        this.totalPages = res.data.totalPages;
-        this.isLoading = false;
-
-      },error:(err)=>{
-        this.results.next([]);
-        this.totalPages = 0;
-        this.isLoading=false;
-        this.messageService.add({severity:'error',summary:'Error!',detail:err.error.message,key:'bc'});
-
-      }
-    })
+    this.first = 0;
+    this.loadData();
   }
 
-  handleReset(user:any) {
+  onPageChange(event: any) {
+    this.first = event.first;
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading = true;
+
+    this._AdminService
+      .getUsersForAdminExam(this.examId, this.adminId, this.first)
+      .subscribe({
+        next: (res) => {
+          this.results.next(res.data.content);
+          this.totalPages = res.data.totalPages;
+
+          if (res.data.content.length > 0) {
+            this.total_mark = res.data.content[0].totalMark;
+            this.passMark = Math.ceil(0.5 * this.total_mark);
+          }
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.results.next([]);
+          this.isLoading = false;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error.message
+          });
+        }
+      });
+  }
+
+    handleReset(user:any) {
     let resetData = {
       userId:user.userId,
       examId:this.examId
@@ -121,10 +244,13 @@ export class ScoreComponent implements OnInit{
     })
   }
 
-  viewAnswers(res: any) {
-  this.router.navigate([
-    '/dashboard/admin/viewUserAnswers',
-    res.examSubmissionId,res.userName, res.examName,res.score
-  ]);
-}
+  viewAnswers(res: IscoreContentData) {
+    this.router.navigate([
+      '/dashboard/admin/viewUserAnswers',
+      res.examSubmissionId,
+      res.userName,
+      res.examName,
+      res.score
+    ]);
+  }
 }
