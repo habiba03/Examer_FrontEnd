@@ -4,7 +4,6 @@ export interface IscoreContentData {
   userName:string,
   examName:string,
   score:number,
-  totalMark:number,
   examSubmissionId: number; 
 }
 export interface IscoreData {

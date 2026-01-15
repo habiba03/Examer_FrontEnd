@@ -38,7 +38,6 @@ export const routes: Routes = [
           {path:'addUserToExam/:examName/:id' , loadComponent:()=>import("./components/dashboards/admin-dashboard/add-user-to-exam/add-user-to-exam.component").then(c=>c.AddUserToExamComponent)},
           {path:'users' , loadComponent:()=>import("./components/dashboards/admin-dashboard/users/users.component").then(c=>c.UsersComponent)},
           {path:'addUser' , loadComponent:()=>import("./components/dashboards/admin-dashboard/add-user/add-user.component").then(c=>c.AddUserComponent)},
-          {path:'uploadUsers' , loadComponent:()=>import("./components/dashboards/admin-dashboard/upload-users/upload-users.component").then(c=>c.UploadUsersComponent)},
           {path:'deletedUsers' , loadComponent:()=>import("./components/dashboards/admin-dashboard/deleted-users/deleted-users.component").then(c=>c.DeletedUsersComponent)},
           {path:'score' , loadComponent:()=>import("./components/dashboards/admin-dashboard/score/score.component").then(c=>c.ScoreComponent)},
           {path:'viewUserAnswers/:submissionId/:userName/:examName/:score' , loadComponent:()=>import("./components/dashboards/admin-dashboard/view-user-answers/view-user-answers.component").then(c=>c.ViewUserAnswersComponent)},
@@ -55,7 +54,6 @@ export const routes: Routes = [
           {path:'admins' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/admins/admins.component").then(c=>c.AdminsComponent)},
           {path:'addAdmin' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/add-admin/add-admin.component").then(c=>c.AddAdminComponent)},
           {path:'aiBot' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/ai-bot/ai-bot.component").then(c=>c.AiBotComponent)},
-          {path:'uploadQuestions' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/upload-questions/upload-questions.component").then(c=>c.UploadQuestionsComponent)},
           {path:'generatedQuestions' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/generated-question/generated-question.component").then(c=>c.GeneratedQuestionComponent)},
           {path:'deletedAdmins' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/deleted-admins/deleted-admins.component").then(c=>c.DeletedAdminsComponent)},
           {path:'editCategory/:category' , loadComponent:()=>import("./components/dashboards/super-admin-dashboard/edit-category/edit-category.component").then(c=>c.EditCategoryComponent)},
@@ -70,7 +68,7 @@ export const routes: Routes = [
   {path: 'exam', children:[
       {path: '', redirectTo: 'takeExam', pathMatch: 'full'},
       {path: 'takeExam', component: TakeExamComponent},
-      {path: 'answerQuestions/:id', component: AnswerQuestionsComponent}
+      {path: 'answerQuestions/:id/:userId', component: AnswerQuestionsComponent}
     ]},
   {path:'**', component:PageNotFoundedComponent},
 ];

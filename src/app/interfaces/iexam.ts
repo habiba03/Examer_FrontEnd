@@ -4,7 +4,6 @@ export interface IexamContentData {
   "examTitle": "string",
   "examDescription": "string",
   "examDuration": "string",
-  "totalScore": number,
   "easy": number,
   "medium": number,
   "hard": number,

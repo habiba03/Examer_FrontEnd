@@ -85,39 +85,24 @@
           </div>
 
           <div
-            class="answer-box p-3 border border-primary rounded bg-light shadow-sm mb-2"
+            class="answer-box p-3 border border-primary rounded bg-light shadow-sm"
           >
             <p class="mb-0" style="white-space: pre-wrap; line-height: 1.6">
               {{ question.writtenAnswer }}
             </p>
           </div>
 
-          <div class="mt-2 text-muted small mb-2">
+          <div class="mt-2 text-muted small">
             <i class="fas fa-info-circle me-1"></i>
             Word count: {{ getWordCount(question.writtenAnswer) }} words
           </div>
-
-          <!-- Rating Dropdown -->
-          <div class="btn-group" role="group">
-            <label *ngFor="let r of [1,2,3,4,5]"
-                  class="btn"
-                  [class.btn-primary]="question.writtenScore === r"
-                  [class.btn-outline-primary]="question.writtenScore !== r">
-              <input type="radio" 
-                    [value]="r" 
-                    [(ngModel)]="question.writtenScore"
-                    style="display: none;">
-              {{ r }}
-            </label>
-          </div>
-
-
-
         </div>
 
         <!-- ========== MCQ / TRUE-FALSE ANSWERS ========== -->
         <div
-          *ngIf="question.selectedOptions && question.selectedOptions.length > 0"
+          *ngIf="
+            question.selectedOptions && question.selectedOptions.length > 0
+          "
           class="options-container"
         >
           <div class="fw-bold mb-2">
@@ -171,12 +156,6 @@
 
     <!-- FOOTER -->
     <div class="text-center mt-4 mb-5">
-      <button class="btn btn-success px-5 py-2 me-2"
-              (click)="submitWrittenRatings()"
-              [disabled]="isLoading">
-        <i class="fa fa-check-circle me-2"></i>
-        Submit Ratings
-      </button>
       <button class="btn btn-primary px-5 py-2" (click)="goBack()">
         <i class="fa fa-arrow-left me-2"></i>
         Back to Scores

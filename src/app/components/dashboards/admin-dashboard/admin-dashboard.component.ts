@@ -63,7 +63,7 @@ export class AdminDashboardComponent implements OnInit {
   autoExpandActiveSection() {
     // Auto-expand based on current route
     const examsRoutes = ['exams', 'newExam', 'score'];
-    const usersRoutes = ['users', 'addUser', 'uploadUsers', 'deletedUsers'];
+    const usersRoutes = ['users', 'addUser', 'deletedUsers'];
     
     if (examsRoutes.includes(this.activeSec)) {
       this.expandedSections['exams'] = true;

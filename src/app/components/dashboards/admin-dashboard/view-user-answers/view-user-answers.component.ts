@@ -1,7 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
 import { SkeletonModule } from 'primeng/skeleton';
 import Swal from 'sweetalert2';
 import { ExamService } from '../../../../services/exam.service';
@@ -10,7 +9,7 @@ import { IUserAnswerView } from '../../../../interfaces/iviewAnswers';
 @Component({
   selector: 'app-view-student-answers',
   standalone: true,
-  imports: [CommonModule, SkeletonModule, FormsModule],
+  imports: [CommonModule, SkeletonModule],
   templateUrl: './view-user-answers.component.html',
   styleUrls: ['./view-user-answers.component.scss'],
 })
@@ -120,43 +119,4 @@ export class ViewUserAnswersComponent implements OnInit {
   goBack() {
     this._Router.navigate(['/dashboard/admin/score']);
   }
-
-  // Add this method to your component
-submitWrittenRatings() {
-  const rates = this.questionsWithAnswers
-    .filter(q => q.writtenAnswer && q.writtenAnswer.trim() !== '')
-    .map(q => ({
-      userAnswerId: q.userAnswerId, // make sure you added this in your IUserAnswerView
-      rate: q.writtenScore || 0
-    }));
-
-  if (rates.length === 0) return;
-
-  this.isLoading = true;
-  this._ExamService.rateWrittenExam(this.submissionId, { rates }).subscribe({
-    next: res => {
-      this.isLoading = false;
-      Swal.fire({
-        icon: 'success',
-        title: 'Ratings saved!',
-        text: res.message || 'Written answers rated successfully.'
-      });
-
-      // Optional: update the score shown in UI
-      this.score = res.data?.newScore || this.score;
-    },
-    error: err => {
-      this.isLoading = false;
-      Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: err.error?.message || 'Failed to save ratings.'
-      });
-    }
-  });
-  this._Router.navigate(['/dashboard/admin/score']);
-}
-
-
-
 }

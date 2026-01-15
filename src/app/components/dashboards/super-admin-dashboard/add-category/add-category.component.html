@@ -23,5 +23,212 @@
       </button>
     </form>
 
+    <!-- Excel Upload Section -->
+    <div class="excel-section">
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <h5 class="text-center mb-3">
+        <i class="fas fa-file-excel text-success me-2"></i>
+        Upload Questions from Excel
+      </h5>
+
+      <div class="excel-buttons">
+        <button class="btn btn-outline-success" (click)="showTemplatePreview()">
+          <i class="fas fa-download me-2"></i>
+          Download Template
+        </button>
+        <button class="btn btn-success" (click)="showUploadModal()">
+          <i class="fas fa-upload me-2"></i>
+          Upload Excel
+        </button>
+      </div>
+
+      <div class="info-box">
+        <i class="fas fa-info-circle me-2"></i>
+        <small>
+          Download the template, fill in your questions, and upload to quickly add multiple questions at once.
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Excel Modal -->
+<div class="modal fade" id="uploadExcelModal" tabindex="-1" aria-labelledby="uploadExcelModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="uploadExcelModalLabel">
+          <i class="fas fa-file-upload me-2"></i>
+          Upload Questions from Excel
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- File Upload Area -->
+        <div class="upload-area" 
+             [class.dragover]="isDragOver"
+             (dragover)="onDragOver($event)" 
+             (dragleave)="onDragLeave($event)" 
+             (drop)="onDrop($event)"
+             (click)="fileInput.click()">
+          
+          @if(!selectedFile) {
+            <div class="text-center">
+              <i class="fas fa-cloud-upload-alt fa-4x text-success mb-3"></i>
+              <h5>Drag & Drop your Excel file here</h5>
+              <p class="text-muted">or click to browse</p>
+              <p class="small text-muted">Supported formats: .xlsx, .xls (Max 5MB)</p>
+            </div>
+          }
+          
+          <!-- Selected File Info -->
+          @if(selectedFile) {
+            <div class="text-center">
+              <i class="fas fa-file-excel fa-4x text-success mb-3"></i>
+              <h6>{{ selectedFile.name }}</h6>
+              <p class="text-muted small">{{ (selectedFile.size / 1024).toFixed(2) }} KB</p>
+              <button class="btn btn-sm btn-outline-danger" (click)="removeFile($event)">
+                <i class="fas fa-times me-1"></i>
+                Remove
+              </button>
+            </div>
+          }
+          
+          <input #fileInput 
+                 type="file" 
+                 accept=".xlsx,.xls" 
+                 (change)="onFileSelected($event)" 
+                 style="display: none;">
+        </div>
+
+        <!-- Upload Progress -->
+        @if(uploadProgress > 0) {
+          <div class="mt-3">
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                   role="progressbar" 
+                   [style.width.%]="uploadProgress">
+                {{ uploadProgress }}%
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Info Alert -->
+        <div class="alert alert-info mt-3">
+          <h6 class="alert-heading">
+            <i class="fas fa-lightbulb me-2"></i>
+            Required Columns:
+          </h6>
+          <ul class="mb-0 small">
+            <li><strong>Question Text:</strong> Your question content</li>
+            <li><strong>Type:</strong> MCQ, TF, or WRITTEN</li>
+            <li><strong>Options:</strong> Separate with semicolons (;)</li>
+            <li><strong>Correct Answer Indices:</strong> 0-based (e.g., 0,2)</li>
+            <li><strong>Difficulty:</strong> EASY, MEDIUM, or HARD</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>
+          Cancel
+        </button>
+        <button type="button" 
+                class="btn btn-success" 
+                [disabled]="!selectedFile || uploadProgress > 0"
+                (click)="uploadFile()">
+          <i class="fas fa-upload me-2"></i>
+          Upload & Import
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Preview Modal -->
+<div class="modal fade" id="templatePreviewModal" tabindex="-1" aria-labelledby="templatePreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="templatePreviewModalLabel">
+          <i class="fas fa-table me-2"></i>
+          Excel Template Preview
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>This is how your Excel file should be structured:</strong>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th>questionContent</th>
+                <th>difficulty</th>
+                <th>category</th>
+                <th>questionType</th>
+                <th>options</th>
+                <th>correctOptionIndexes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>What is 2 + 2?</td>
+                <td>EASY</td>
+                <td>math</td>
+                <td>MCQ</td>
+                <td>2;3;4;5</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>Java is platform independent</td>
+                <td>MEDIUM</td>
+                <td>Java</td>
+                <td>TF</td>
+                <td>True;False</td>
+                <td>0</td>
+                
+              </tr>
+              <tr>
+                <td>Explain the concept of OOP</td>
+                <td>HARD</td>
+                <td>Option1</td>
+                <td>WRITTEN</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="alert alert-warning mt-3">
+          <strong><i class="fas fa-exclamation-triangle me-2"></i>Important Notes:</strong>
+          <ul class="mb-0 mt-2">
+            <li>For multiple correct answers: use commas <code>0,2,3</code></li>
+            <li>For options: use semicolons <code>Option1;Option2;Option3</code></li>
+            <li>Indices start from 0 (first option = 0)</li>
+            <li>WRITTEN questions: leave Options and Correct Answer blank</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="downloadTemplate()" data-bs-dismiss="modal">
+          <i class="fas fa-download me-2"></i>
+          Download Template
+        </button>
+      </div>
+    </div>
   </div>
 </div>
