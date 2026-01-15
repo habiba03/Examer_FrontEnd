@@ -1,36 +1,36 @@
-.container{
-  .answerQuestions{
+.container {
+  .answerQuestions {
     height: calc(100vh - 66px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    .content{
+    .content {
       width: 70%;
       box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
       border-radius: 15px;
       padding: 30px;
 
-      .header{
+      .header {
         display: flex;
         justify-content: space-between;
         font-weight: bold;
       }
 
-      .question{
+      .question {
         font-size: 18px;
-
       }
 
-      form{
-        .form-check{
+      form {
+        .form-check {
           margin: 20px 0;
-          input,label{
+          input,
+          label {
             cursor: pointer;
           }
         }
-        button{
+        button {
           padding: 10px 40px;
           margin: 30px 0 0;
         }
@@ -39,10 +39,10 @@
   }
 }
 
-@media(max-width: 767px){
-  .container{
-    .takeExam{
-      .content{
+@media (max-width: 767px) {
+  .container {
+    .takeExam {
+      .content {
         width: 100%;
       }
     }

@@ -1,25 +1,168 @@
-/* ===============================
-   PAGE LAYOUT
-================================ */
-
-.container {
+.container{
   display: flex;
   justify-content: center;
   align-items: center;
   height: calc(100vh - 66px);
 
-  .myForm {
+  .myForm{
     width: 40%;
     text-align: center;
-
-    input {
+    input{
       margin: 15px 0;
       padding: 12px;
     }
-
-    button {
+    button{
       width: 100%;
       margin: 20px 0;
+    }
+  }
+
+}
+.excel-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  //border-top: 2px dashed #e0e0e0;
+
+  .divider {
+    text-align: center;
+    margin: 30px 0 25px;
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    &::before {
+      left: 0;
+    }
+
+    &::after {
+      right: 0;
+    }
+
+    span {
+      background: white;
+      padding: 0 15px;
+      color: #999;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+  }
+
+  h5 {
+    color: #333;
+    font-weight: 700;
+  }
+
+  .excel-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+
+  .info-box {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    border-left: 4px solid #0ea5e9;
+    padding: 15px;
+    border-radius: 8px;
+    color: #075985;
+    font-size: 0.9rem;
+
+    i {
+      color: #0284c7;
+    }
+  }
+}
+
+.upload-area {
+  border: 3px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+
+  &:hover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+  }
+
+  &.dragover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    transform: scale(1.02);
+  }
+
+  i.fa-cloud-upload-alt,
+  i.fa-file-excel {
+    display: block;
+    margin: 0 auto;
+  }
+
+  h5 {
+    color: #334155;
+    font-weight: 600;
+    margin: 15px 0 8px;
+  }
+
+  p {
+    color: #64748b;
+    margin: 5px 0;
+  }
+}
+
+.modal-content {
+  border-radius: 15px;
+  border: none;
+
+  .modal-header {
+    border-radius: 15px 15px 0 0;
+  }
+
+  .table-dark th {
+    background: #1f2937;
+  }
+
+  code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #dc2626;
+  }
+}
+
+@media (max-width: 768px) {
+  .excel-section .excel-buttons {
+    flex-direction: column;
+  }
+}
+@media (max-width: 767px) {
+  .container{
+    .myForm{
+      width: 100%;
     }
   }
 }
