@@ -173,25 +173,27 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body px-4">
+          
             <form [formGroup]="updateQuestionsForm">
               <!-- Question Type Tabs -->
               <div class="mb-4">
                 <label class="form-label fw-semibold mb-3">Question Type</label>
                 <div class="btn-group w-100" role="group">
-                  <input type="radio" class="btn-check" id="updateMcq" formControlName="questionType" value="MCQ" >
+                  <input type="radio" class="btn-check" id="updateMcq" formControlName="questionType" value="MCQ">
                   <label class="btn btn-outline-primary" for="updateMcq">Multiple Choice</label>
                   
-                  <input type="radio" class="btn-check" id="updateTf" formControlName="questionType" value="TF" >
+                  <input type="radio" class="btn-check" id="updateTf" formControlName="questionType" value="TF">
                   <label class="btn btn-outline-primary" for="updateTf">True/False</label>
                   
-                  <input type="radio" class="btn-check" id="updateWritten" formControlName="questionType" value="WRITTEN" >
+                  <input type="radio" class="btn-check" id="updateWritten" formControlName="questionType" value="WRITTEN">
                   <label class="btn btn-outline-primary" for="updateWritten">Written Answer</label>
                 </div>
               </div>
+              
 
               <!-- Multiple Correct Answers Checkbox (MCQ only) -->
               @if(updateQuestionsForm.get('questionType')?.value === 'MCQ'){
-                <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+                <div class="alert alert-info d-flex align-items-start mb-4" role="alert">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="updateMultipleCorrect" [checked]="allowMultipleCorrectUpdate" (change)="toggleMultipleCorrectUpdate($event)">
                     <label class="form-check-label" for="updateMultipleCorrect">
@@ -212,7 +214,7 @@
               <!-- Difficulty -->
               <div class="mb-4">
                 <label for="updateDifficulty" class="form-label fw-semibold">Difficulty Level</label>
-                <select id="updateDifficulty" class="form-select" formControlName="difficulty" >
+                <select id="updateDifficulty" class="form-select" formControlName="difficulty">
                   <option disabled [value]="null">Select Difficulty</option>
                   <option value="Easy">Easy</option>
                   <option value="Medium">Medium</option>
@@ -230,7 +232,7 @@
               </div>
 
               <!-- Answer Options -->
-              <!-- @if(updateQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
+              @if(updateQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
                 <div class="mb-4">
                   <label class="form-label fw-semibold">Answer Options</label>
                   
@@ -252,20 +254,27 @@
                           [placeholder]="'Option ' + ($index + 1)"
                           [readonly]="updateQuestionsForm.get('questionType')?.value === 'TF'">
                         @if(updateQuestionsForm.get('questionType')?.value === 'MCQ' && updateOptions.length > 2){
-                          <button type="button" class="btn btn-outline-danger" (click)="removeOption(updateQuestionsForm, $index)">
+                          <button 
+                            type="button" 
+                            class="btn btn-outline-danger" 
+                            (click)="removeOption(updateQuestionsForm, $index)">
                             <i class="fas fa-times"></i>
                           </button>
                         }
                       </div>
                       @if(option.errors && option.touched){
-                        <div class="text-danger small mt-1">This option is required!</div>
+                        <div class="text-danger small mt-1">
+                          This option is required!
+                        </div>
                       }
                     </div>
                   }
-           
 
                   @if(updateQuestionsForm.get('questionType')?.value === 'MCQ'){
-                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="addOption(updateQuestionsForm)">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-primary btn-sm" 
+                      (click)="addOption(updateQuestionsForm)">
                       <i class="fas fa-plus"></i> Add Option
                     </button>
                   }
@@ -274,72 +283,12 @@
                     Select the correct answer by clicking the {{ allowMultipleCorrectUpdate && updateQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio button' }}
                   </div>
                 </div>
-              } -->
-
-
-
-
-              <!-- Answer Options -->
-              @if(addQuestionsForm.get('questionType')?.value !== 'WRITTEN'){
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Answer Options</label>
-                
-                @for(option of updateOptions.controls; track $index){
-                  <div class="mb-3">
-                    <div class="input-group">
-                      <span class="input-group-text bg-light" style="width: 45px;">
-                        <input 
-                          [type]="allowMultipleCorrectUpdate && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio'"
-                          [name]="allowMultipleCorrectUpdate ? 'correct_' + $index : 'correctAnswer'"
-                          [checked]="isCorrectAnswer(updateQuestionsForm, $index)"
-                          (change)="toggleCorrectAnswer(updateQuestionsForm, $index, $event, allowMultipleCorrectUpdate)"
-                          class="form-check-input mt-0">
-                      </span>
-                      <input 
-                        type="text" 
-                        class="form-control form-control-lg" 
-                        [formControl]="$any(option)"
-                        [placeholder]="'Option ' + ($index + 1)"
-                        [readonly]="addQuestionsForm.get('questionType')?.value === 'TF'">
-                      @if(addQuestionsForm.get('questionType')?.value === 'MCQ' && updateOptions.length > 2){
-                        <button 
-                          type="button" 
-                          class="btn btn-outline-danger" 
-                          (click)="removeOption(updateQuestionsForm, $index)">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      }
-                    </div>
-                    @if(option.errors && option.touched){
-                      <div class="text-danger small mt-1">
-                        This option is required!
-                      </div>
-                    }
-                  </div>
-                }
-
-                @if(addQuestionsForm.get('questionType')?.value === 'MCQ'){
-                  <button 
-                    type="button" 
-                    class="btn btn-outline-primary btn-sm" 
-                    (click)="addOption(updateQuestionsForm)">
-                    <i class="fas fa-plus"></i> Add Option
-                  </button>
-                }
-
-                <div class="form-text mt-2">
-                  Select the correct answer by clicking the {{ allowMultipleCorrectUpdate && addQuestionsForm.get('questionType')?.value === 'MCQ' ? 'checkbox' : 'radio button' }}
-                </div>
-              </div>
-            }
-
-
-
-
+              }
 
               <!-- Written Answer Note -->
               @if(updateQuestionsForm.get('questionType')?.value === 'WRITTEN'){
                 <div class="alert alert-info" role="alert">
+                  <i class="fas fa-info-circle me-2"></i>
                   <strong>Note:</strong> This is an open-ended question. Students will provide written answers that need manual grading.
                 </div>
               }

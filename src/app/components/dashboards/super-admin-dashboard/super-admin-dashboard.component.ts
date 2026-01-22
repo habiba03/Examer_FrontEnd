@@ -92,7 +92,13 @@ export class SuperAdminDashboardComponent implements OnInit {
   }
 
   handleLogout(): void {
-    localStorage.removeItem('userToken');
-    this._Router.navigate(['/pages/login']);
+    this._AuthService.logout().subscribe({
+      next: (res) => {
+
+      },
+      error: (err) => {
+
+      }
+    });
   }
 }

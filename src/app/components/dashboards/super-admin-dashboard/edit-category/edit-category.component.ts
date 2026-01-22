@@ -1,4 +1,5 @@
 import { Component, OnInit} from '@angular/core';
+import {CommonModule} from "@angular/common";
 import {SuperAdminService} from "../../../../services/super-admin.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TooltipModule} from "primeng/tooltip";
@@ -15,7 +16,7 @@ import {PaginatorModule} from "primeng/paginator";
 @Component({
   selector: 'app-edit-category',
   standalone: true,
-  imports: [TooltipModule, QustionContentPipe, ReactiveFormsModule, ToastModule, ConfirmDialogModule, TitleCasePipe, PaginatorModule],
+  imports: [TooltipModule, QustionContentPipe, ReactiveFormsModule, ToastModule, ConfirmDialogModule, TitleCasePipe, PaginatorModule, CommonModule],
   providers: [ConfirmationService, MessageService],
   templateUrl: './edit-category.component.html',
   styleUrl: './edit-category.component.scss'
@@ -269,6 +270,8 @@ export class EditCategoryComponent implements OnInit{
         this.updateQuestionsForm.get("questionType")?.setValue(data.questionType);
         this.updateQuestionsForm.get("category")?.setValue(data.category);
         
+
+        
         // Determine if multiple correct answers
         this.allowMultipleCorrectUpdate = data.correctOptionIndexes.length > 1;
         
@@ -308,33 +311,62 @@ export class EditCategoryComponent implements OnInit{
     })
   }
 
-  handleDleteQuestion(event: Event,questionId: number) {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass:"p-button-danger p-button-text",
-      rejectButtonStyleClass:"p-button-text p-button-text",
-      accept: () => {
-        this.isLoading = true;
-        this._SuperAdminService.deleteQuestion(questionId,this.selectedDifficulty,this.first).subscribe({
-          next:(res)=>{
+  handleDleteQuestion(event: Event, questionId: number) {
+  this.confirmationService.confirm({
+    target: event.target as EventTarget,
+    message: 'Do you want to delete this record?',
+    header: 'Delete Confirmation',
+    icon: 'pi pi-info-circle',
+    acceptButtonStyleClass: "p-button-danger p-button-text",
+    rejectButtonStyleClass: "p-button-text p-button-text",
+
+    accept: () => {
+      this.isLoading = true;
+
+      this._SuperAdminService
+        .deleteQuestion(questionId, this.selectedDifficulty, this.first)
+        .subscribe({
+          next: (res) => {
             this.questions = res.data.content;
             this.totalPages = res.data.totalPages;
-            this.messageService.add({ severity: 'info', summary: 'Confirmed',key:'bc', detail: 'Record deleted' });
+
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Deleted',
+              key: 'bc',
+              detail: res.message || 'Record deleted'
+            });
+
             this.isLoading = false;
           },
-          error:(err)=>{
+
+          error: (err) => {
             this.isLoading = false;
+
+            const backendMessage =
+              err?.error?.message || 'Something went wrong while deleting';
+
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Delete Failed',
+              key: 'bc',
+              detail: backendMessage
+            });
           }
-        })
-      },
-      reject: () => {
-        this.messageService.add({ severity: 'error', summary: 'Rejected',key:'bc', detail: 'You have rejected' });
-      }
-    });
-  }
+        });
+    },
+
+    reject: () => {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Cancelled',
+        key: 'bc',
+        detail: 'You have rejected'
+      });
+    }
+  });
+}
+
 
   private prepareFormData(form: FormGroup): any {
     const questionType = form.get('questionType')?.value;
