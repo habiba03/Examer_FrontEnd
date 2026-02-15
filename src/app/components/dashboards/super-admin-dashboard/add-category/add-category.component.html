@@ -10,6 +10,9 @@
           @if(addCategoryForm.get('category')?.getError('required')){
             <li class="text-danger text-start">Please, enter your category</li>
           }
+          @if(addCategoryForm.get('category')?.getError('pattern')){
+            <small class="text-danger">Category must be 2–30 characters and contain only letters and numbers</small>
+          }
         </ul>
       }
       

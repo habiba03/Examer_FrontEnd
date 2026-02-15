@@ -25,7 +25,7 @@ export class AddCategoryComponent {
 
 
   addCategoryForm: FormGroup = new FormGroup({
-    category: new FormControl(null, Validators.required),
+    category: new FormControl(null, [Validators.required, Validators.pattern(/^(?!\s*$)[a-zA-Z0-9_ ]{2,30}$/)]),
   });
 
   handleGenerate(addCategoryForm: FormGroup) {

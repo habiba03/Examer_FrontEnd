@@ -67,7 +67,7 @@ export class AdminsComponent implements OnInit{
 
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
+      message: 'Do you want to soft delete this admin?',
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass:"p-button-danger p-button-text",
@@ -77,7 +77,7 @@ export class AdminsComponent implements OnInit{
         this._SuperAdminService.deleteAdmin(adminId,this.first).subscribe({
           next:(res)=>{
             this.admins = res.data.content;
-            this.messageService.add({ severity: 'info', summary: 'Confirmed',key:'bc', detail: 'Record deleted' });
+            this.messageService.add({ severity: 'info', summary: 'Confirmed',key:'bc', detail: 'Admin moved to Deleted Admins (restore possible).' });
 
           },
           error:(err)=>{

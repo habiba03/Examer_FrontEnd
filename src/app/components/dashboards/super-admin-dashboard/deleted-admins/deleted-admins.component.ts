@@ -68,7 +68,7 @@ export class DeletedAdminsComponent implements OnInit{
 
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this record?',
+      message: 'Do you want to permanent delete this admin?',
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass:"p-button-danger p-button-text",

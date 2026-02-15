@@ -18,10 +18,14 @@ import {AnswerQuestionsComponent} from "./components/exam/answer-questions/answe
 import {authGuard} from "./guards/auth.guard";
 import {adminDashboardGuard} from "./guards/admin-dashboard.guard";
 import {superAdminDashboardGuard} from "./guards/super-admin-dashboard.guard";
+import { permitGuard } from './guards/permit.guard';
+
 
 export const routes: Routes = [
   {path:'', redirectTo:'pages', pathMatch:'full'},
-  {path:'pages', component:PagesComponent, children:[
+  {path:'pages',
+    //  canActivate: [permitGuard],
+      component:PagesComponent, children:[
       {path:'', redirectTo:'home',pathMatch:'full'},
       {path:'home', component:HomeComponent},
       {path:'contact', component:ContactComponent},
@@ -47,6 +51,7 @@ export const routes: Routes = [
               {path:'changeInfo', component:ChangeInfoComponent},
               {path:'changePass', loadComponent:()=>import("./components/dashboards/admin-dashboard/adminProfile/change-pass/change-pass.component").then(c=>c.ChangePassComponent)}
             ]},
+          {path: 'viewImages/:examId/:studentId',loadComponent: () =>import('./components/dashboards/admin-dashboard/view-images/view-images.component').then(c => c.ViewImagesComponent),},
         ]},
       {path: 'superAdmin',canActivate:[superAdminDashboardGuard], component: SuperAdminDashboardComponent, children:[
           {path:'' , redirectTo:'categories', pathMatch:'full'},
@@ -70,7 +75,7 @@ export const routes: Routes = [
   {path: 'exam', children:[
       {path: '', redirectTo: 'takeExam', pathMatch: 'full'},
       {path: 'takeExam', component: TakeExamComponent},
-      {path: 'answerQuestions/:id', component: AnswerQuestionsComponent}
+      {path: 'answerQuestions/:id/:userId', component: AnswerQuestionsComponent}
     ]},
   {path:'**', component:PageNotFoundedComponent},
 ];
