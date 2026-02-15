@@ -24,7 +24,7 @@ export class ProctoringService {
   uploadSnapshot(
     image: string,
     examId: string,
-    userId: number,
+    userId: string,
   ): Observable<any> {
     const payload = {
       studentId: userId,

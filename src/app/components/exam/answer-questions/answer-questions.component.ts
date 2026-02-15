@@ -436,52 +436,53 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 }
 
 
-  AutoSubmitExam() {
-    if (this.isSubmitted) return;
+AutoSubmitExam() {
+  if (this.isSubmitted) return;
 
-    this.saveCurrentAnswer();
-    const payload = this.buildUserAnswerPayload();
+  // Save the current answer and disable form immediately
+  this.saveCurrentAnswer();
+  this.optionsForm.disable();
+  this.isSubmitted = true;
+  if (this.countdownTimer) clearInterval(this.countdownTimer);
+  this.cleanupListeners();
 
-    Swal.fire({
-      title: 'Time is up!',
-      text: 'Your exam will be submitted automatically.',
-      icon: 'info',
-      allowOutsideClick: false,
-      confirmButtonText: 'OK',
-    }).then(() => {
-      this._ExamService.submitUserAnswers(payload).subscribe({
-        next: (res: any) => {
-          this.isSubmitted = true;
-          this.optionsForm.disable();
-          this.cleanupListeners();
-          if (this.countdownTimer) clearInterval(this.countdownTimer);
+  const payload = this.buildUserAnswerPayload();
 
-          if (res?.score !== undefined) this.score = res.score;
+  Swal.fire({
+    title: 'Time is up!',
+    text: 'Your exam will be submitted automatically.',
+    icon: 'info',
+    allowOutsideClick: false,
+    confirmButtonText: 'OK',
+  }).then(() => {
+    this._ExamService.submitUserAnswers(payload).subscribe({
+      next: (res: any) => {
+        // Extract score safely
+        this.score = res?.data?.score ?? null;
 
-          Swal.fire({
-            title: 'Success!',
-            text:
-              this.score !== null
-                ? `Your exam was submitted successfully! Your score: ${this.score}`
-                : 'Your exam was submitted successfully!',
-            icon: 'success',
-            allowOutsideClick: false,
-            confirmButtonText: 'OK',
-          }).then(() => {
-            this.exitFullScreen();
-            this._Router.navigate(['/pages/home']);
-          });
-        },
-        error: (err) => {
-          Swal.fire({
-            title: 'Error!',
-            text: err.error?.message || 'Failed to submit answers',
-            icon: 'error',
-          });
-        },
-      });
+        Swal.fire({
+          title: 'Success!',
+          html: this.score !== null 
+            ? `Your exam was submitted successfully!<hr/><h3>Correct Answers: ${this.score}</h3>` 
+            : 'Your exam was submitted successfully!',
+          icon: 'success',
+          allowOutsideClick: false,
+          confirmButtonText: 'OK',
+        }).then(() => {
+          this.exitFullScreen();
+          this._Router.navigate(['/pages/home']);
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error!',
+          text: err.error?.message || 'Failed to submit answers',
+          icon: 'error',
+        });
+      },
     });
-  }
+  });
+}
 
   detectTabSwitch() {
     this.visibilityChangeHandler = () => {

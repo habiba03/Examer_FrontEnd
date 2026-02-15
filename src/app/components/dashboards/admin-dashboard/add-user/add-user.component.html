@@ -2,7 +2,7 @@
   <div class="form_container">
     <h2>Add New <br>User</h2>
     <form [formGroup]="addUserForm">
-      <input type="text" class="form-control" placeholder="Name" formControlName="userName">
+      <input type="text" class="form-control" placeholder="User Name" formControlName="userName">
       @if(addUserForm.get('userName')?.errors && addUserForm.get('userName')?.touched){
         <ul class="list-unstyled">
           @if(addUserForm.get('userName')?.getError('required')){
