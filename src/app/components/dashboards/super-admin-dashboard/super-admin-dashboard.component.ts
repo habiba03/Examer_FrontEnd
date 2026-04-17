@@ -20,7 +20,7 @@ import { AdminNamePipe } from "../../../pipes/admin-name.pipe";
 export class SuperAdminDashboardComponent implements OnInit {
   
   activeSec: string = 'categories';
-  adminName: string = '';
+  adminName: string = 'Super Admin';
   
   // Track expanded sections
   expandedSections: { [key: string]: boolean } = {
@@ -36,7 +36,13 @@ export class SuperAdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this._AuthService.decodeToken();
-    this.adminName = this._AuthService.decodedTokenInfo.value.name;
+    this.adminName = this._AuthService.decodedTokenInfo.value.sub;
+    // console.log("admin name is",this.adminName);
+    // console.log("decoded token info",this._AuthService.decodedTokenInfo.value);
+
+    
+    
+    
     
     // Set initial expanded section based on current route
     this.initializeExpandedSections();

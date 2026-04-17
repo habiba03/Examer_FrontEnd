@@ -91,7 +91,8 @@
               </li>
             </ul>
           </div>
-          <span class="ms-auto username">{{adminName | uppercase | adminName}}</span>
+          <span class="ms-auto username" style="cursor: pointer;" routerLink="/dashboard/admin/profile">{{ adminName | uppercase | adminName }}</span>
+
         </div>
       </nav>
       <router-outlet></router-outlet>

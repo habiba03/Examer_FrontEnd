@@ -23,7 +23,7 @@ export class AddUserComponent {
   isDragOver: boolean = false;
   
   addUserForm:FormGroup = new FormGroup({
-    userName: new FormControl(null, [Validators.required, Validators.pattern(/^[a-zA-Z_]{1,20}$/)]),
+    userName: new FormControl(null, [Validators.required, Validators.pattern(/^[a-zA-Z_]{1,60}$/)]),
     phone: new FormControl(null, [Validators.required, Validators.pattern(/^(010|011|012|015)[0-9]{8}$/)]),
     email: new FormControl(null, [Validators.required, Validators.email]),
   })

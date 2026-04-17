@@ -8,8 +8,14 @@
           @if(addAdminForm.get('adminUserName')?.getError('required')){
             <li class="text-danger text-start">please, Enter your username</li>
           }
+          @if (addAdminForm.get('adminUserName')?.getError('minlength')){
+            <li class="text-danger text-start">Username must be at least 2 characters long</li>
+          }
+          @if (addAdminForm.get('adminUserName')?.getError('maxlength')){
+            <li class="text-danger text-start">Username must be at most 50 characters long</li>
+          }
           @if(addAdminForm.get('adminUserName')?.getError('pattern')){
-            <li class="text-danger text-start">Username can only contain letters, numbers and "_", and must be 1-20 characters long</li>
+            <li class="text-danger text-start"> Username must contain at least one letter or number and may include underscores (_)</li>
           }
         </ul>
       }

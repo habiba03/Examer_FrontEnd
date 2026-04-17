@@ -112,4 +112,20 @@ export class AdminService {
       return this._HttpClient.put("/api/v1/recoverUser",data,{params:{page:pageNumber}});
   }
 
+  getImagesByExamAndStudent(examId: number, studentId: number) {
+  return this._HttpClient.get<string[]>(`/api/v1/exam/${examId}/student/${studentId}`);
+}
+
+
+
+getImage(path: string) {
+  return this._HttpClient.get(
+    `/api/image`,
+    {
+      params: { path },
+      responseType: 'blob'
+    }
+  );
+}
+
 }
