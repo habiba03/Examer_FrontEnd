@@ -171,6 +171,10 @@
               formControlName="writtenAnswer"
               rows="8"
               placeholder="Type your answer here... (minimum 10 characters)"
+              spellcheck="false"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
               [class.is-invalid]="
                 optionsForm.get('writtenAnswer')?.invalid &&
                 optionsForm.get('writtenAnswer')?.touched

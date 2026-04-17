@@ -4,7 +4,7 @@ import {AuthService} from "../../../../services/auth.service";
 import {DropdownModule} from "primeng/dropdown";
 import {PaginatorModule} from "primeng/paginator";
 import {MessageService, PrimeTemplate} from "primeng/api";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {IscoreContentData} from "../../../../interfaces/iscore";
 import {ToastModule} from "primeng/toast";
 import {NgClass} from "@angular/common";
@@ -21,6 +21,7 @@ import {Router} from "@angular/router";
     PaginatorModule,
     PrimeTemplate,
     ReactiveFormsModule,
+    FormsModule,
     ToastModule,
     NgClass,
     AlphabeticalOrderPipe
@@ -36,7 +37,10 @@ export class ScoreComponent implements OnInit {
   adminId = 0;
 
   results = new BehaviorSubject<IscoreContentData[]>([]);
+  filteredResults: IscoreContentData[] = [];
   isLoading = true;
+
+  searchTerm: string = '';
 
   total_mark = 0;
   passMark = 0;
@@ -72,12 +76,25 @@ export class ScoreComponent implements OnInit {
   handleDropDown(event: any) {
     this.examId = event.value.id;
     this.first = 0;
+    this.searchTerm = '';
+    this.filteredResults = [];
     this.loadData();
   }
 
   onPageChange(event: any) {
     this.first = event.first;
     this.loadData();
+  }
+
+  onSearch() {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredResults = this.results.value;
+    } else {
+      this.filteredResults = this.results.value.filter(res =>
+        res.userName.toLowerCase().includes(term)
+      );
+    }
   }
 
   loadData() {
@@ -88,6 +105,8 @@ export class ScoreComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.results.next(res.data.content);
+          this.filteredResults = res.data.content;
+          this.onSearch();
           this.totalPages = res.data.totalPages;
 
           if (res.data.content.length > 0) {
@@ -99,6 +118,7 @@ export class ScoreComponent implements OnInit {
         },
         error: (err) => {
           this.results.next([]);
+          this.filteredResults = [];
           this.isLoading = false;
           this.messageService.add({
             severity: 'error',
@@ -109,19 +129,21 @@ export class ScoreComponent implements OnInit {
       });
   }
 
-    handleReset(user:any) {
+  handleReset(user: any) {
     let resetData = {
-      userId:user.userId,
-      examId:this.examId
+      userId: user.userId,
+      examId: this.examId
     }
     this._AdminService.resetUserExam(resetData).subscribe({
-      next:(res)=>{
+      next: (res) => {
         const updated = this.results.value.filter(u => u.userId !== user.userId);
         this.results.next(updated);
-        this.messageService.add({severity:'success',summary:'Success',detail:res.message,key:'bc'});
+        this.filteredResults = updated;
+        this.onSearch();
+        this.messageService.add({severity: 'success', summary: 'Success', detail: res.message, key: 'bc'});
       },
-      error:(err)=>{
-        this.messageService.add({severity:'error',summary:'Error!',detail:err.error.message,key:'bc'});
+      error: (err) => {
+        this.messageService.add({severity: 'error', summary: 'Error!', detail: err.error.message, key: 'bc'});
       }
     })
   }
@@ -135,11 +157,12 @@ export class ScoreComponent implements OnInit {
       res.score
     ]);
   }
-  viewImage(res: any) {   
-  this.router.navigate([
-    '/dashboard/admin/viewImages',
-    this.examId,
-    res.userId
-  ]);
-}
+
+  viewImage(res: any) {
+    this.router.navigate([
+      '/dashboard/admin/viewImages',
+      this.examId,
+      res.userId
+    ]);
+  }
 }
