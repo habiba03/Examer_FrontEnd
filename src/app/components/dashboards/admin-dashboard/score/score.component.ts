@@ -85,7 +85,7 @@ export class ScoreComponent implements OnInit {
     this.first = event.first;
     this.loadData();
   }
-
+ 
   onSearch() {
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) {

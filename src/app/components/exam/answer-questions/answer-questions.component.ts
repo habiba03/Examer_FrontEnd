@@ -49,6 +49,9 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   reloadCount: number = 0;
   score: number | null = null;
+  submitRetryCount: number = 0;
+  isSubmitting: boolean = false;
+  lastSubmitPayload: any = null; 
 
   secondsCount: number = 0;
   minutes: number = 0;
@@ -273,40 +276,52 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   }
 
   handleSubmit(): void {
-  this.saveCurrentAnswer();
-  const answered = this.userAnswers.filter(a => a != null).length;
+    this.saveCurrentAnswer();
+    const answered = this.userAnswers.filter(a => a != null).length;
 
-  if (!answered) {
-    void Swal.fire({
-      title: 'No answers!',
-      text: 'Answer at least one question.',
-      icon: 'warning'
-    });
-    return;
+    if (!answered) {
+      void Swal.fire({
+        title: 'No answers!',
+        text: 'Answer at least one question.',
+        icon: 'warning'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Submit Exam?',
+      text: `Answered ${answered} of ${this.examLength} questions. Submit?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit',
+      cancelButtonText: 'No, go back',
+    }).then(r => r.isConfirmed && this.submitExam());
   }
-
-  Swal.fire({
-    title: 'Submit Exam?',
-    text: `Answered ${answered} of ${this.examLength} questions. Submit?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, submit',
-    cancelButtonText: 'No, go back',
-  }).then(r => r.isConfirmed && this.submitExam());
-}
 
   submitExam() {
     if (this.isSubmitted) return;
+
     this.saveCurrentAnswer();
     this.isSubmitted = true;
+    this.isSubmitting = true;
     this.optionsForm.disable();
     clearInterval(this.countdownTimer);
     this.cleanupListeners();
     this.stopCamera();
 
     const payload = this.buildUserAnswerPayload();
+    this.lastSubmitPayload = payload;
+    this.submitRetryCount = 0;
+
+    this.attemptSubmit(payload);
+  }
+
+  private attemptSubmit(payload: any) {
+    this.isSubmitting = true;
+
     this._ExamService.submitUserAnswers(payload).subscribe({
       next: (res: any) => {
+        this.isSubmitting = false;
         this.score = res?.data?.score ?? null;
         Swal.fire({
           title: 'Success!',
@@ -314,10 +329,49 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
           icon: 'success',
           allowOutsideClick: false,
           confirmButtonText: 'OK',
-        }).then(() => { this.exitFullScreen(); this._Router.navigate(['/pages/home']); });
+        }).then(() => {
+          this.exitFullScreen();
+          this._Router.navigate(['/pages/home']);
+        });
       },
-      error: (err) => Swal.fire({ title: 'Error!', text: err.error?.message || 'Failed to submit', icon: 'error' }),
+      error: (err) => {
+        this.isSubmitting = false;
+        this.handleSubmitError(err, payload);
+      },
     });
+  }
+
+  private handleSubmitError(err: any, payload: any) {
+    const errorMessage = err.error?.message || err.message || 'Failed to submit exam';
+    const isNetworkError = !err.status || err.status === 0 || err.status >= 500;
+
+    this.isSubmitted = false;
+    this.isSubmitting = false;
+    this.optionsForm.enable();
+    this.startCountdown();
+
+    if (isNetworkError) {
+      this.exitFullScreen();
+      Swal.fire({
+        title: 'Try Submit Again',
+        text: 'Network error. Please check your connection and click submit button again.',
+        icon: 'warning',
+        timer: 4000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+      });
+    } else {
+      this.exitFullScreen();
+      Swal.fire({
+        title: 'Submission Failed!',
+        html: `<p>${errorMessage}</p>`,
+        icon: 'error',
+        allowOutsideClick: false,
+        confirmButtonText: 'OK',
+      }).then(() => {
+        this._Router.navigate(['/pages/home']);
+      });
+    }
   }
 
   AutoSubmitExam() { this.submitExam(); }
@@ -352,20 +406,89 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
     };
     document.addEventListener('fullscreenchange', this.fullscreenChangeHandler);
   }
+tabSwitchCount: number = 0;
+disableShortcuts() {
 
-  disableShortcuts() {
-    this.contextMenuHandler = (e: MouseEvent) => !this.isSubmitted && e.preventDefault();
-    this.keydownHandler = (e: KeyboardEvent) => {
-      if (this.isSubmitted) return;
-      if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-        e.preventDefault(); this.reloadCount++; if (this.reloadCount > 1) this.AutoSubmitExam(); 
-        else Swal.fire({ title: 'Warning!', text: 'Reloading is not allowed. Reload again → auto-submit.', icon: 'warning', allowOutsideClick: false, confirmButtonText: 'OK' });
+  this.contextMenuHandler = (e: MouseEvent) =>
+    !this.isSubmitted && e.preventDefault();
+
+  this.keydownHandler = (e: KeyboardEvent) => {
+
+    if (this.isSubmitted) return;
+
+    // Reload protection
+    if (e.key === 'F5' || (e.ctrlKey && e.key.toLowerCase() === 'r')) {
+      e.preventDefault();
+
+      this.reloadCount++;
+
+      if (this.reloadCount > 1) {
+        this.AutoSubmitExam();
+      } else {
+        Swal.fire({
+          title: 'Warning!',
+          text: 'Reloading is not allowed. Reload again → auto-submit.',
+          icon: 'warning',
+          allowOutsideClick: false,
+          confirmButtonText: 'OK'
+        });
       }
-      if ((e.ctrlKey && ['c','v','x','a','s'].includes(e.key.toLowerCase())) || e.key==='F12') e.preventDefault();
-    };
-    document.addEventListener('contextmenu', this.contextMenuHandler);
-    document.addEventListener('keydown', this.keydownHandler);
-  }
+    }
+
+    // Block shortcuts
+    if (
+      (e.ctrlKey && ['c', 'v', 'x', 'a', 's'].includes(e.key.toLowerCase())) ||
+      e.key === 'F12'
+    ) {
+      e.preventDefault();
+    }
+
+    // Detect Alt+Tab attempt
+    if (e.altKey && e.key === 'Tab') {
+      e.preventDefault();
+
+      Swal.fire({
+        title: 'Warning!',
+        text: 'Switching tabs/windows is not allowed.',
+        icon: 'warning'
+      });
+    }
+  };
+
+  // Detect leaving tab/window
+  document.addEventListener('visibilitychange', () => {
+
+    if (document.hidden && !this.isSubmitted) {
+
+      this.tabSwitchCount = (this.tabSwitchCount || 0) + 1;
+
+      if (this.tabSwitchCount >= 2) {
+        this.AutoSubmitExam();
+      } else {
+        Swal.fire({
+          title: 'Warning!',
+          text: 'Leaving the exam window is prohibited. Next time exam will be submitted automatically.',
+          icon: 'warning',
+          allowOutsideClick: false
+        });
+      }
+    }
+  });
+
+  window.addEventListener('blur', () => {
+
+    if (!this.isSubmitted) {
+
+      console.log('Window lost focus');
+
+      // optional:
+      // this.AutoSubmitExam();
+    }
+  });
+
+  document.addEventListener('contextmenu', this.contextMenuHandler);
+  document.addEventListener('keydown', this.keydownHandler);
+}
 
   startCountdown() {
     this.countdownTimer = setInterval(() => {
