@@ -1,18 +1,20 @@
-<div class="container">
-  <div class="myTable">
-
-     <div class="mySelect">
+<div class="container flex-column justify-content-center align-items-center">
+  <div class="mySelect w-50 mb-3">
+    <div class="d-flex gap-2">
       <input
         type="text"
-        class="form-control mb-3"
+        class="form-control"
         placeholder="Search by name, email or phone..."
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
       />
-      <button *ngIf="searchTerm" class="btn btn-sm btn-outline-secondary mb-3" (click)="clearSearch()">
+      <button *ngIf="searchTerm" class="btn btn-sm btn-outline-secondary" (click)="clearSearch()">
         Clear
       </button>
     </div>
+  </div>
+  <div class="myTable">
+
     @if(isLoading){
     <div class="loader">
       <div class="spinner-border" role="status">
