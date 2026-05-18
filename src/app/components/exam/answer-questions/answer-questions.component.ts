@@ -475,16 +475,6 @@ disableShortcuts() {
     }
   });
 
-  window.addEventListener('blur', () => {
-
-    if (!this.isSubmitted) {
-
-      console.log('Window lost focus');
-
-      // optional:
-      // this.AutoSubmitExam();
-    }
-  });
 
   document.addEventListener('contextmenu', this.contextMenuHandler);
   document.addEventListener('keydown', this.keydownHandler);
