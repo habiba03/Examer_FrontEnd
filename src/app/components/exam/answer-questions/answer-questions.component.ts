@@ -352,16 +352,15 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
     if (isNetworkError) {
       this.exitFullScreen();
       if (this.secondsCount <= 0) {
-        // Time is already up — show ONE persistent dialog with a retry button.
-        // (that causes the infinite loop).
+        // Time is already up — show ONE dialog with OK button acting as close only.
         Swal.fire({
           title: 'Submit Failed',
           text: 'Network error. Please check your connection and retry.',
           icon: 'warning',
           timer: 4000,
           timerProgressBar: true,
-          showConfirmButton: false,
           allowOutsideClick: true,
+          confirmButtonText: 'OK',
         });
       } else {
         this.startCountdown();
