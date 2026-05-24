@@ -348,18 +348,32 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
     this.isSubmitted = false;
     this.isSubmitting = false;
     this.optionsForm.enable();
-    this.startCountdown();
-
+    
     if (isNetworkError) {
       this.exitFullScreen();
-      Swal.fire({
-        title: 'Try Submit Again',
-        text: 'Network error. Please check your connection and click submit button again.',
-        icon: 'warning',
-        timer: 4000,
-        timerProgressBar: true,
-        allowOutsideClick: true,
-      });
+      if (this.secondsCount <= 0) {
+        // Time is already up — show ONE persistent dialog with a retry button.
+        // (that causes the infinite loop).
+        Swal.fire({
+          title: 'Submit Failed',
+          text: 'Network error. Please check your connection and retry.',
+          icon: 'warning',
+          timer: 4000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          allowOutsideClick: true,
+        });
+      } else {
+        this.startCountdown();
+        Swal.fire({
+          title: 'Try Submit Again',
+          text: 'Network error. Please check your connection and click submit button again.',
+          icon: 'warning',
+          timer: 4000,
+          timerProgressBar: true,
+          allowOutsideClick: true,
+        });
+      }
     } else {
       this.exitFullScreen();
       Swal.fire({
