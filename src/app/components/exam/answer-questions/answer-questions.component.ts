@@ -59,7 +59,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
   hours: number = 0;
   remMinutes: number = 0;
   countdownTimer: any;
-
+  pendingSnapshots: any[] = [];
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
   private proctoringTimer: any;
@@ -116,6 +116,9 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
         this._Router.navigate(['/pages/home']);
       },
     });
+    window.addEventListener('online', () => {
+  this.retryPendingSnapshots();
+});
   }
 
   ngOnDestroy(): void {
@@ -132,7 +135,7 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
 
       this.proctoringTimer = setInterval(() => {
         if (!this.isSubmitted) this.captureAndUpload();
-      }, 30000);
+      }, 10000);
     } catch (err) {
       Swal.fire(
         'Camera Required',
@@ -163,11 +166,66 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-      this._ProctoringService.uploadSnapshot(imageBase64, this.examId, this.userId)
-        .subscribe({ next: () => {}, error: (err) => console.error(err) });
+      const snapshot = {
+      image: imageBase64,
+      examId: this.examId,
+      userId: this.userId,
+      timestamp: new Date().toISOString()
+    };
+
+    this.uploadOrStoreSnapshot(snapshot);
     }
   }
+uploadOrStoreSnapshot(snapshot: any) {
 
+  if (!navigator.onLine) {
+    this.storeSnapshot(snapshot);
+    return;
+  }
+
+  this._ProctoringService
+    .uploadSnapshot(snapshot.image, snapshot.examId, snapshot.userId)
+    .subscribe({
+      next: () => {
+        console.log('Snapshot uploaded');
+      },
+
+      error: () => {
+        this.storeSnapshot(snapshot);
+      }
+    });
+}
+ storeSnapshot(snapshot: any) {
+  const storageKey = `exam_${snapshot.examId}_snapshots`;
+
+  let snapshots = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  snapshots.push(snapshot);
+
+  localStorage.setItem(storageKey, JSON.stringify(snapshots));
+  console.log('Snapshot stored locally');
+}
+ retryPendingSnapshots() {
+  const storageKey = `exam_${this.examId}_snapshots`;
+  const stored = localStorage.getItem(storageKey);
+
+  if (stored && navigator.onLine) {
+    const snapshots = JSON.parse(stored);
+
+    snapshots.forEach((snapshot: any) => {
+      this._ProctoringService
+        .uploadSnapshot(snapshot.image, snapshot.examId, snapshot.userId)
+        .subscribe({
+          next: () => {},
+          error: () => {
+            console.log('Failed to upload stored snapshot');
+          }
+        });
+    });
+
+    localStorage.removeItem(storageKey);
+    console.log('Retried pending snapshots');
+  }
+}
   currentQuestion() {
     this.examQuestion = this.examQuestions[this.currentQindex] || null;
     this.setupFormForCurrentQuestion();
@@ -297,10 +355,36 @@ export class AnswerQuestionsComponent implements OnInit, OnDestroy {
       cancelButtonText: 'No, go back',
     }).then(r => r.isConfirmed && this.submitExam());
   }
+async retryPendingSnapshotsBeforeSubmit(): Promise<void> {
 
+  const saved = localStorage.getItem('pendingSnapshots');
+
+  if (!saved) return;
+
+  const snapshots = JSON.parse(saved);
+
+  for (const snapshot of snapshots) {
+
+    try {
+
+      await this._ProctoringService
+        .uploadSnapshot(
+          snapshot.image,
+          snapshot.examId,
+          snapshot.userId
+        )
+        .toPromise();
+
+    } catch (err) {
+      console.error('Failed to upload snapshot before submit', err);
+    }
+  }
+
+  localStorage.removeItem('pendingSnapshots');
+}
   submitExam() {
     if (this.isSubmitted) return;
-
+   this.retryPendingSnapshotsBeforeSubmit();
     this.saveCurrentAnswer();
     this.isSubmitted = true;
     this.isSubmitting = true;
